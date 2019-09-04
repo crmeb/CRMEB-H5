@@ -1,9 +1,27 @@
 # 公众号和H5
 
-#### 介绍
+## 介绍
 vue 公众号和H5前端页面
+#### CRMEB后端程序下载地址
+  码云：https://gitee.com/ZhongBangKeJi/CRMEB.git
+  github:https://github.com/crmeb/CRMEB
+  #### 微信小程序版前端界面
+  github:https://github.com/crmeb/CRMEB_WechatApplet_v3.0
+  码云：https://gitee.com/ZhongBangKeJi/CRMEB_WechatApplet_v3.0
+  #### H5版前端界面
+  github:https://github.com/crmeb/CRMEB-H5-3.0
+  码云：https://gitee.com/ZhongBangKeJi/CRMEB-H5-3.0
+## 页面展示
+![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517m1q6lojldotdq8lt.jpg)
+![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517mj4z9e62j84n4jih.jpg)
+![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517a5r35hc87rh13557.jpg)
+![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517cl3l6jbav64ldeor.jpg)
+![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517ombj4g1o9nc49g4j.jpg)
 
-#### 软件架构
+## 演示地址
+http://demo.crmeb.net/admin
+帐号：demo 密码：crmeb.com
+## 软件架构
 
 - api 接口目录
 - assets 公共静态资源
@@ -13,12 +31,12 @@ vue 公众号和H5前端页面
 - views 页面
 - router 路由
 
-#### 规范
+## 规范
 
 - 组件首字母大写
 - 尽可能用全等做比较
 
-#### 安装教程
+## 安装教程
 
 Project setup
 ```
@@ -45,25 +63,3 @@ Lints and fixes files
 npm run lint
 ```
 
-#### 使用说明
-
-1. xxxx
-2. xxxx
-3. xxxx
-
-#### 参与贡献
-
-1. Fork 本仓库
-2. 新建 Feat_xxx 分支
-3. 提交代码
-4. 新建 Pull Request
-
-
-#### 码云特技
-
-1. 使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2. 码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3. 你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4. [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5. 码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6. 码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
