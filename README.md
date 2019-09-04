@@ -1,8 +1,29 @@
-# 公众号和H5
+<p align="center">
+<img src="https://images.gitee.com/uploads/images/2018/1214/151026_2299df23_892944.gif" />
+</p>
+<h1 align="center"> CRMEB客户管理+电商营销系统</h1> 
+<p align="center">
+    <a href="http://www.crmeb.com">
+        <img src="https://img.shields.io/badge/OfficialWebsite-CRMEB-yellow.svg" />
+    </a>
+<a href="http://www.crmeb.com">
+        <img src="https://img.shields.io/badge/Licence-GPL3.0-green.svg?style=flat" />
+    </a>
+    <a href="http://www.crmeb.com">
+        <img src="https://img.shields.io/badge/Edition-2.6-blue.svg" />
+    </a>
+     <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
+        <img src="https://img.shields.io/badge/download-80m-red.svg" />
+    </a>
+</p>
+
+### 如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！
+
+# CRMEBv3.0公众号和H5前端页面
 
 ## 介绍
 vue 公众号和H5前端页面,采用vuecli框架
-* - - -
+
 + CRMEB后端程序下载地址
 
   + 码云:https://gitee.com/ZhongBangKeJi/CRMEB.git
@@ -21,7 +42,7 @@ vue 公众号和H5前端页面,采用vuecli框架
   
    + 码云：https://gitee.com/ZhongBangKeJi/CRMEB-H5-3.0
    
-* - - -
+
 ## 页面展示
 ![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517m1q6lojldotdq8lt.jpg)
 ![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517mj4z9e62j84n4jih.jpg)
