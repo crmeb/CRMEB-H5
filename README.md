@@ -2,15 +2,25 @@
 
 ## 介绍
 vue 公众号和H5前端页面
-#### CRMEB后端程序下载地址
-  码云：https://gitee.com/ZhongBangKeJi/CRMEB.git
-  github:https://github.com/crmeb/CRMEB
-  #### 微信小程序版前端界面
-  github:https://github.com/crmeb/CRMEB_WechatApplet_v3.0
-  码云：https://gitee.com/ZhongBangKeJi/CRMEB_WechatApplet_v3.0
-  #### H5版前端界面
-  github:https://github.com/crmeb/CRMEB-H5-3.0
-  码云：https://gitee.com/ZhongBangKeJi/CRMEB-H5-3.0
+
++ CRMEB后端程序下载地址
+
+  + 码云:https://gitee.com/ZhongBangKeJi/CRMEB.git
+  
+  + github:https://github.com/crmeb/CRMEB
+
++ 微信小程序版前端界面
+  
+   + github:https://github.com/crmeb/CRMEB_WechatApplet_v3.0
+  
+   + 码云：https://gitee.com/ZhongBangKeJi/CRMEB_WechatApplet_v3.0
+  
++ H5版前端界面
+  
+   + github:https://github.com/crmeb/CRMEB-H5-3.0
+  
+   + 码云：https://gitee.com/ZhongBangKeJi/CRMEB-H5-3.0
+* - - -
 ## 页面展示
 ![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517m1q6lojldotdq8lt.jpg)
 ![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517mj4z9e62j84n4jih.jpg)
