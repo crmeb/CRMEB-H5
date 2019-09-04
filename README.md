@@ -1,8 +1,8 @@
 # 公众号和H5
 
 ## 介绍
-vue 公众号和H5前端页面
-
+vue 公众号和H5前端页面,采用vuecli框架
+* - - -
 + CRMEB后端程序下载地址
 
   + 码云:https://gitee.com/ZhongBangKeJi/CRMEB.git
@@ -20,6 +20,7 @@ vue 公众号和H5前端页面
    + github:https://github.com/crmeb/CRMEB-H5-3.0
   
    + 码云：https://gitee.com/ZhongBangKeJi/CRMEB-H5-3.0
+   
 * - - -
 ## 页面展示
 ![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517m1q6lojldotdq8lt.jpg)
@@ -31,6 +32,10 @@ vue 公众号和H5前端页面
 ## 演示地址
 http://demo.crmeb.net/admin
 帐号：demo 密码：crmeb.com
+
+## 官网地址
+商业版请到官网授权：http://www.crmeb.com
+
 ## 软件架构
 
 - api 接口目录
