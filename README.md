@@ -41,7 +41,13 @@ vue 公众号和H5前端页面,采用vuecli框架
    + github:https://github.com/crmeb/CRMEB-H5-3.0
   
    + 码云：https://gitee.com/ZhongBangKeJi/CRMEB-H5-3.0
-   
+
+### 帮助文档：
+https://help.crmeb.net/crmeb
+### 论坛地址:
+http://bbs.crmeb.net
+
+QQ群: 710729856 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=1794ec6e9fd6ac21bd6519d459d4495e824553693ab0a98a9899e61d68a494d0"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发四群" title="CRMEB微信开发四群"></a>
 
 ## 页面展示
 ![image](http://bbs.crmeb.net/data/attachment/forum/201909/04/150517m1q6lojldotdq8lt.jpg)
