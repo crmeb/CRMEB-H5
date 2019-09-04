@@ -10,10 +10,10 @@
         <img src="https://img.shields.io/badge/Licence-GPL3.0-green.svg?style=flat" />
     </a>
     <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Edition-2.6-blue.svg" />
+        <img src="https://img.shields.io/badge/Edition-3.0-blue.svg" />
     </a>
      <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
-        <img src="https://img.shields.io/badge/download-80m-red.svg" />
+        <img src="https://img.shields.io/badge/download-2m-red.svg" />
     </a>
 </p>
 
