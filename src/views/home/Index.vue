@@ -9,7 +9,12 @@
     <div class="slider-banner banner">
       <swiper :options="swiperOption" v-if="banner.length > 0">
         <swiper-slide v-for="(item, index) in banner" :key="index">
-          <img :src="item.pic" />
+          <router-link
+            :to="item.wap_url ? item.wap_url : ''"
+            class="search acea-row row-middle"
+          >
+            <img :src="item.pic" />
+          </router-link>
         </swiper-slide>
         <div class="swiper-pagination" slot="pagination"></div>
       </swiper>
@@ -25,7 +30,7 @@
         <div>{{ item.name }}</div>
       </router-link>
     </div>
-    <div class="news acea-row row-between-wrapper" v-if="roll.length">
+    <div class="news acea-row row-between-wrapper">
       <div class="pictrue"><img src="@assets/images/news.png" /></div>
       <div class="swiper-no-swiping new-banner">
         <swiper
@@ -52,9 +57,9 @@
         </swiper>
       </div>
     </div>
-    <div class="specialArea acea-row row-between-wrapper" v-if="activity.length">
+    <div class="specialArea acea-row row-between-wrapper">
       <router-link
-        :to="activityOne.wap_link !==undefined ? activityOne.wap_link : ''"
+        :to="activityOne.wap_link ? activityOne.wap_link : ''"
         class="assemble"
       >
         <img :src="activityOne.pic" />
@@ -65,7 +70,7 @@
       </router-link>
       <div class="list acea-row row-column-between">
         <router-link
-          :to="item.wap_link !== undefined ? item.wap_link : ''"
+          :to="item.wap_link ? item.wap_link : ''"
           class="item"
           v-for="(item, index) in activity"
           :key="index"
@@ -127,7 +132,7 @@
             v-for="(item, index) in info.bastBanner"
             :key="index"
           >
-            <router-link :to="item.wap_link !== undefined ? item.wap_link : ''"
+            <router-link :to="item.wap_link ? item.wap_link : ''"
               ><img :src="item.img"
             /></router-link>
           </swiper-slide>
@@ -179,9 +184,9 @@
         </router-link>
       </div>
     </div>
-    <div v-if="lovely.length > 0">
-      <div class="adver" v-for="(item, index) in lovely" :key="index">
-        <img :src="item.img" />
+    <div v-if="lovely.img">
+      <div class="adver">
+        <img :src="lovely.img" />
       </div>
     </div>
     <div class="wrapper" v-if="info.firstList.length > 0">
@@ -243,7 +248,7 @@ import PromotionGood from "@components/PromotionGood";
 import CouponWindow from "@components/CouponWindow";
 import { getHomeData, getShare } from "@api/public";
 import cookie from "@utils/store/cookie";
-import { openShareAppMessage, openShareTimeline, ready } from "@libs/wechat";
+import { openShareAll } from "@libs/wechat";
 import { isWeixin } from "@utils/index";
 
 const HAS_COUPON_WINDOW = "has_coupon_window";
@@ -340,8 +345,10 @@ export default {
       that.$set(that, "menus", res.data.menus);
       that.$set(that, "roll", res.data.roll);
       that.$set(that, "activity", res.data.activity);
-      var activityOne = res.data.activity.shift() || {};
-      that.$set(that, "activityOne", activityOne);
+      if (res.data.activity.length) {
+        var activityOne = res.data.activity.shift();
+        that.$set(that, "activityOne", activityOne);
+      }
       that.$set(that, "info", res.data.info);
       that.$set(that, "likeInfo", res.data.likeInfo);
       that.$set(that, "lovely", res.data.lovely);
@@ -358,26 +365,18 @@ export default {
       cookie.set(HAS_COUPON_WINDOW, 1);
     },
     setOpenShare: function() {
-      getShare().then(res => {
-        var data = res.data.data;
-        var configAppMessage = {
-          desc: data.synopsis,
-          title: data.title,
-          link: location.href,
-          imgUrl: data.img
-        };
-        var configTimeline = {
-          title: data.title,
-          link: location.href,
-          imgUrl: data.img
-        };
-        if (isWeixin() === true) {
-          ready().then(() => {
-            openShareAppMessage(configAppMessage).then(() => {});
-            openShareTimeline(configTimeline).then(() => {});
-          });
-        }
-      });
+      if (isWeixin()) {
+        getShare().then(res => {
+          var data = res.data.data;
+          var configAppMessage = {
+            desc: data.synopsis,
+            title: data.title,
+            link: location.href,
+            imgUrl: data.img
+          };
+          openShareAll(configAppMessage);
+        });
+      }
     }
   }
 };

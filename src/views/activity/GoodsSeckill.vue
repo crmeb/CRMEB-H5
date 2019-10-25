@@ -7,7 +7,7 @@
       v-model="active"
       animated
       title-inactive-color="2"
-      :sticky="sticky"
+      sticky
       ref="timeList"
     >
       <Tab v-for="(item, index) in timeList" :key="index">
@@ -186,6 +186,9 @@ export default {
   padding: 0.11rem 0;
   height: 0.96rem;
   background-color: #efc58f;
+}
+.time-tabs.van-tabs--line {
+  padding: 0;
 }
 .timeItem .time {
   font-size: 0.32rem;

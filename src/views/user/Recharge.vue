@@ -17,10 +17,15 @@
           <span>￥</span>
           <input type="number" placeholder="0.00" v-model="money" />
         </div>
-        <div class="tips">
+        <div class="tips" v-if="!active">
           提示：当前余额为<span>￥{{ now_money || 0 }}</span>
         </div>
-        <div class="pay-btn bg-color-red" @click="recharge">立即充值</div>
+        <div class="tips" v-else>
+          提示：当前佣金为<span>￥{{ userInfo.brokerage_price || 0 }}</span>
+        </div>
+        <div class="pay-btn bg-color-red" @click="recharge">
+          {{ active ? "立即转入" : "立即充值" }}
+        </div>
       </div>
     </div>
   </div>
@@ -30,7 +35,7 @@ import { mapGetters } from "vuex";
 import { pay } from "@libs/wechat";
 import { isWeixin } from "@utils";
 import { rechargeWechat } from "@api/user";
-import { add } from "@utils/bc";
+import { add, sub } from "@utils/bc";
 
 export default {
   name: "Recharge",
@@ -57,53 +62,99 @@ export default {
     recharge: function() {
       let that = this,
         price = Number(this.money);
-      if (price === 0) {
-        return that.$dialog.toast({ mes: "请输入您要充值的金额" });
-      } else if (price < 0.01) {
-        return that.$dialog.toast({ mes: "充值金额不能低于0.01" });
-      }
-      rechargeWechat({ price: price, from: that.from })
-        .then(res => {
-          var data = res.data;
-          if (data.type == "weixinh5") {
-            location.replace(data.data.mweb_url);
-            this.$dialog.confirm({
-              mes: "充值余额",
-              opts: [
-                {
-                  txt: "已充值",
-                  color: false,
-                  callback: () => {
-                    that.$router.replace({
-                      path: "/user/account"
-                    });
-                  }
-                },
-                {
-                  txt: "查看余额",
-                  color: false,
-                  callback: () => {
-                    that.$router.replace({
-                      path: "/user/account"
-                    });
-                  }
-                }
-              ]
-            });
-          } else {
-            pay(data.data)
-              .finally(() => {
-                that.now_money = add(price, parseInt(that.userInfo.now_money));
-                that.$dialog.toast({ mes: "支付成功" });
-              })
-              .catch(function() {
-                that.$dialog.toast({ mes: "支付失败" });
-              });
-          }
-        })
-        .catch(res => {
-          that.$dialog.toast({ mes: res.msg });
+      if (that.active) {
+        if (price === 0) {
+          return that.$dialog.toast({ mes: "请输入您要转入的金额" });
+        } else if (price < 0.01) {
+          return that.$dialog.toast({ mes: "转入金额不能低于0.01" });
+        }
+        this.$dialog.confirm({
+          mes: "转入余额无法在转出，请确认转入",
+          title: "转入余额",
+          opts: [
+            {
+              txt: "确认",
+              color: false,
+              callback: () => {
+                rechargeWechat({ price: price, from: that.from, type: 1 })
+                  .then(res => {
+                    that.now_money = add(
+                      price,
+                      parseInt(that.userInfo.now_money)
+                    );
+                    that.userInfo.brokerage_price = sub(
+                      that.userInfo.brokerage_price,
+                      price
+                    );
+                    that.money = "";
+                    return that.$dialog.toast({ mes: res.msg });
+                  })
+                  .catch(res => {
+                    that.$dialog.toast({ mes: res.msg });
+                  });
+              }
+            },
+            {
+              txt: "取消",
+              color: false,
+              callback: () => {
+                return that.$dialog.toast({ mes: "已取消" });
+              }
+            }
+          ]
         });
+      } else {
+        if (price === 0) {
+          return that.$dialog.toast({ mes: "请输入您要充值的金额" });
+        } else if (price < 0.01) {
+          return that.$dialog.toast({ mes: "充值金额不能低于0.01" });
+        }
+        rechargeWechat({ price: price, from: that.from })
+          .then(res => {
+            var data = res.data;
+            if (data.type == "weixinh5") {
+              location.replace(data.data.mweb_url);
+              this.$dialog.confirm({
+                mes: "充值余额",
+                opts: [
+                  {
+                    txt: "已充值",
+                    color: false,
+                    callback: () => {
+                      that.$router.replace({
+                        path: "/user/account"
+                      });
+                    }
+                  },
+                  {
+                    txt: "查看余额",
+                    color: false,
+                    callback: () => {
+                      that.$router.replace({
+                        path: "/user/account"
+                      });
+                    }
+                  }
+                ]
+              });
+            } else {
+              pay(data.data)
+                .finally(() => {
+                  that.now_money = add(
+                    price,
+                    parseInt(that.userInfo.now_money)
+                  );
+                  that.$dialog.toast({ mes: "支付成功" });
+                })
+                .catch(function() {
+                  that.$dialog.toast({ mes: "支付失败" });
+                });
+            }
+          })
+          .catch(res => {
+            that.$dialog.toast({ mes: res.msg });
+          });
+      }
     }
   }
 };

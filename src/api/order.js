@@ -120,3 +120,10 @@ export function express(uni) {
 export function payOrder(uni, paytype, from) {
   return request.post("order/pay", { uni, paytype, from });
 }
+/**
+ * 订单核销
+ * @returns {*}
+ */
+export function orderVerific(verify_code, is_confirm) {
+  return request.post("order/order_verific", { verify_code, is_confirm });
+}

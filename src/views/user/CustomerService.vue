@@ -230,7 +230,7 @@ export default {
     return {
       url: `${VUE_APP_API_URL}/upload/image`,
       headers: {
-        Authorization: "Bearer " + this.$store.state.app.token
+        "Authori-zation": "Bearer " + this.$store.state.app.token
       },
       emojiGroup: chunk(emojiList, 20),
       active: false,

@@ -15,7 +15,8 @@
               购物买{{ item.use_min_price }}减{{ item.coupon_price }}
             </div>
             <div v-if="item.end_time">
-              {{ item.start_time }}-{{ item.end_time }}
+              {{ item.start_time ? item.start_time + "-" : ""
+              }}{{ item.end_time }}
             </div>
           </div>
         </div>

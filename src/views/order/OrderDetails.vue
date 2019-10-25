@@ -22,8 +22,19 @@
           <div :class="{ on: status.type === 0 || status.type === 9 }">
             待付款
           </div>
-          <div :class="{ on: status.type === 1 }">待发货</div>
-          <div :class="{ on: status.type === 2 }">待收货</div>
+          <div
+            :class="{ on: status.type === 1 }"
+            v-if="orderInfo.shipping_type === 2"
+          >
+            待核销
+          </div>
+          <div :class="{ on: status.type === 1 }" v-else>待发货</div>
+          <div
+            :class="{ on: status.type === 2 }"
+            v-if="orderInfo.shipping_type === 1"
+          >
+            待收货
+          </div>
           <div :class="{ on: status.type === 3 }">待评价</div>
           <div :class="{ on: status.type === 4 }">已完成</div>
         </div>
@@ -56,15 +67,17 @@
               'bg-color-red':
                 status.type > 1 && status.type != 6 && status.type != 9
             }"
+            v-if="orderInfo.shipping_type === 1"
           ></div>
           <div
-            class="iconfont icon-yuandianxiao"
+            class="iconfont"
             :class="[
               status.type === 2 ? 'icon-webicon318' : 'icon-yuandianxiao',
               status.type >= 2 && status.type != 6 && status.type != 9
                 ? 'font-color-red'
                 : ''
             ]"
+            v-if="orderInfo.shipping_type === 1"
           ></div>
           <div
             class="line"
@@ -74,7 +87,7 @@
             }"
           ></div>
           <div
-            class="iconfont icon-yuandianxiao"
+            class="iconfont"
             :class="[
               status.type === 3 ? 'icon-webicon318' : 'icon-yuandianxiao',
               status.type >= 3 && status.type != 6 && status.type != 9
@@ -90,7 +103,7 @@
             }"
           ></div>
           <div
-            class="iconfont icon-yuandianxiao"
+            class="iconfont"
             :class="[
               status.type == 4 ? 'icon-webicon318' : 'icon-yuandianxiao',
               status.type >= 4 && status.type != 6 && status.type != 9
@@ -100,14 +113,67 @@
           ></div>
         </div>
       </div>
-      <div class="address">
+      <div
+        class="writeOff"
+        v-if="orderInfo.shipping_type === 2 && orderInfo.paid === 1"
+      >
+        <div class="title">核销信息</div>
+        <div class="grayBg">
+          <div class="pictrue"><img :src="orderInfo.code" /></div>
+        </div>
+        <div class="gear"><img src="@assets/images/writeOff.jpg" /></div>
+        <div class="num">{{ orderInfo._verify_code }}</div>
+        <div class="rules">
+          <div class="item">
+            <div class="rulesTitle acea-row row-middle">
+              <span class="iconfont icon-shijian"></span>核销时间
+            </div>
+            <div class="info">
+              每日：<span class="time">{{ system_store.day_time }}</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="rulesTitle acea-row row-middle">
+              <span class="iconfont icon-shuoming1"></span>使用说明
+            </div>
+            <div class="info">可将二维码出示给店员扫描或提供数字核销码</div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="map acea-row row-between-wrapper"
+        v-if="orderInfo.shipping_type === 2 && orderInfo.paid === 1"
+      >
+        <div>自提地址信息</div>
+        <div
+          class="place cart-color acea-row row-center-wrapper"
+          @click="showChang"
+        >
+          <span class="iconfont icon-weizhi"></span>查看位置
+        </div>
+      </div>
+      <div class="address" v-if="orderInfo.shipping_type === 1">
         <div class="name">
           {{ orderInfo.real_name
           }}<span class="phone">{{ orderInfo.user_phone }}</span>
+          <span class="iconfont icon-tonghua font-color-red"></span>
         </div>
         <div>{{ orderInfo.user_address }}</div>
       </div>
-      <div class="line"><img src="@assets/images/line.jpg" /></div>
+      <div class="address" v-else>
+        <div class="name">
+          {{ system_store.name
+          }}<span class="phone">{{ system_store.phone }}</span>
+          <a
+            class="iconfont icon-tonghua font-color-red"
+            :href="'tel:' + system_store.phone"
+          ></a>
+        </div>
+        <div>{{ system_store._detailed_address }}</div>
+      </div>
+      <div class="line" v-if="orderInfo.shipping_type === 1">
+        <img src="@assets/images/line.jpg" />
+      </div>
     </template>
     <OrderGoods
       :evaluate="status.type || 0"
@@ -298,8 +364,140 @@
       @checked="toPay"
       :balance="userInfo.now_money"
     ></Payment>
+    <div class="geoPage" v-if="mapShow">
+      <iframe
+        width="100%"
+        height="100%"
+        frameborder="0"
+        scrolling="no"
+        :src="
+          'https://apis.map.qq.com/uri/v1/geocoder?coord=' +
+            system_store.latitude +
+            ',' +
+            system_store.longitude +
+            '&referer=' +
+            mapKey
+        "
+      >
+      </iframe>
+    </div>
   </div>
 </template>
+<style scoped>
+.geoPage {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  z-index: 10000;
+}
+.order-details .writeOff {
+  background-color: #fff;
+  margin-top: 0.13rem;
+  padding-bottom: 0.3rem;
+}
+.order-details .writeOff .title {
+  font-size: 0.3rem;
+  color: #282828;
+  height: 0.87rem;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 0 0.3rem;
+  line-height: 0.87rem;
+}
+.order-details .writeOff .grayBg {
+  background-color: #f2f5f7;
+  width: 5.9rem;
+  height: 3.84rem;
+  border-radius: 0.2rem 0.2rem 0 0;
+  margin: 0.5rem auto 0 auto;
+  padding-top: 0.55rem;
+}
+.order-details .writeOff .grayBg .pictrue {
+  width: 2.9rem;
+  height: 2.9rem;
+  margin: 0 auto;
+}
+.order-details .writeOff .grayBg .pictrue img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.order-details .writeOff .gear {
+  width: 5.9rem;
+  height: 0.3rem;
+  margin: 0 auto;
+}
+.order-details .writeOff .gear img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.order-details .writeOff .num {
+  background-color: #f0c34c;
+  width: 5.9rem;
+  height: 0.84rem;
+  color: #282828;
+  font-size: 0.48rem;
+  margin: 0 auto;
+  border-radius: 0 0 0.2rem 0.2rem;
+  text-align: center;
+  padding-top: 0.04rem;
+}
+.order-details .writeOff .rules {
+  margin: 0.46rem 0.3rem 0 0.3rem;
+  border-top: 0.01rem solid #f0f0f0;
+  padding-top: 0.1rem;
+}
+.order-details .writeOff .rules .item {
+  margin-top: 0.15rem;
+}
+.order-details .writeOff .rules .item .rulesTitle {
+  font-size: 0.28rem;
+  color: #282828;
+}
+.order-details .writeOff .rules .item .rulesTitle .iconfont {
+  font-size: 0.3rem;
+  color: #333;
+  margin-right: 0.08rem;
+  margin-top: 0.05rem;
+}
+.order-details .writeOff .rules .item .info {
+  font-size: 0.28rem;
+  color: #999;
+  margin-top: 0.05rem;
+}
+.order-details .writeOff .rules .item .info .time {
+  margin-left: 0.2rem;
+}
+.order-details .map {
+  height: 0.86rem;
+  font-size: 0.3rem;
+  color: #282828;
+  line-height: 0.86rem;
+  border-bottom: 0.01rem solid #f0f0f0;
+  margin-top: 0.13rem;
+  background-color: #fff;
+  padding: 0 0.3rem;
+}
+.order-details .map .place {
+  font-size: 0.26rem;
+  width: 1.76rem;
+  height: 0.5rem;
+  border-radius: 0.25rem;
+  line-height: 0.5rem;
+  text-align: center;
+}
+.order-details .map .place .iconfont {
+  font-size: 0.27rem;
+  height: 0.27rem;
+  line-height: 0.27rem;
+  margin: 0.02rem 0.03rem 0 0;
+}
+.order-details .address .name .iconfont {
+  font-size: 0.34rem;
+  margin-left: 0.1rem;
+}
+</style>
 <script>
 import OrderGoods from "@components/OrderGoods";
 import { orderDetail } from "@api/order";
@@ -313,6 +511,7 @@ import {
   delOrderHandle,
   payOrderHandle
 } from "@libs/order";
+import { wechatEvevt } from "@libs/wechat";
 
 const NAME = "OrderDetails";
 
@@ -336,7 +535,10 @@ export default {
       status: {},
       pay: false,
       payType: ["yue", "weixin"],
-      from: isWeixin() ? "weixin" : "weixinh5"
+      from: isWeixin() ? "weixin" : "weixinh5",
+      system_store: {},
+      mapKay: "",
+      mapShow: false
     };
   },
   computed: {
@@ -365,6 +567,31 @@ export default {
     });
   },
   methods: {
+    showChang: function() {
+      if (isWeixin()) {
+        let config = {
+          latitude: this.system_store.latitude,
+          longitude: this.system_store.longitude,
+          name: this.system_store.name,
+          address: this.system_store._detailed_address
+        };
+        wechatEvevt("openLocation", config)
+          .then(res => {
+            console.log(res);
+          })
+          .catch(res => {
+            if (res.is_ready) {
+              res.wx.openLocation(config);
+            }
+          });
+      } else {
+        if (!this.mapKey)
+          return this.$dialog.error(
+            "暂无法使用查看地图，请配置您的腾讯地图key"
+          );
+        this.mapShow = true;
+      }
+    },
     goBack() {
       const history = this.app.history,
         last = history[history.length - 1] || {};
@@ -450,6 +677,8 @@ export default {
             this.orderTypeName = "秒杀订单";
             this.orderTypeNameStatus = false;
           }
+          this.system_store = res.data.system_store || {};
+          this.mapKey = res.data.mapKey;
           this.setOfflinePayStatus(this.orderInfo.offlinePayStatus);
         })
         .catch(err => {

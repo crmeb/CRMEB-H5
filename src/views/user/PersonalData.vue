@@ -139,7 +139,7 @@ export default {
     return {
       url: `${VUE_APP_API_URL}/upload/image`,
       headers: {
-        Authorization: "Bearer " + this.$store.state.app.token
+        "Authori-zation": "Bearer " + this.$store.state.app.token
       },
       avatar: "",
       isWeixin: false,

@@ -241,5 +241,25 @@ export default [
       auth: true
     },
     component: () => import("@views/user/Recharge.vue")
+  },
+  {
+    path: "/user/promoter_rank",
+    name: "PromoterRank",
+    meta: {
+      title: "推广人排行",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/promotion/PromoterRank.vue")
+  },
+  {
+    path: "/user/commission/rank",
+    name: "CommissionRank",
+    meta: {
+      title: "佣金排行",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/promotion/CommissionRank.vue")
   }
 ];

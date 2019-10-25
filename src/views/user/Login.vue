@@ -195,8 +195,13 @@ export default {
         spread: cookie.get("spread")
       })
         .then(res => {
-          var data = res.data;
-          that.$store.commit("LOGIN", data.token, dayjs(data.expires_time));
+          let data = res.data;
+          let newTime = Math.round(new Date() / 1000);
+          that.$store.commit(
+            "LOGIN",
+            data.token,
+            dayjs(data.expires_time) - newTime
+          );
           const backUrl = cookie.get(BACK_URL) || "/";
           cookie.remove(BACK_URL);
           that.$router.replace({ path: backUrl });

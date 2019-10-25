@@ -86,3 +86,15 @@ export function wechatAuth(code, spread, login_type) {
 export function getLogistics() {
   return request.get("/logistics", {}, { login: false });
 }
+
+/**
+ * 获取图片base64
+ * @retins {*}
+ * */
+export function imageBase64(image, code) {
+  return request.post(
+    "/image_base64",
+    { image: image, code: code },
+    { login: false }
+  );
+}

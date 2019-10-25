@@ -37,6 +37,8 @@ import UserEvaluation from "@components/UserEvaluation";
 import { getReplyConfig, getReplyList } from "@api/store";
 import Loading from "@components/Loading";
 
+let NAME = "EvaluateList";
+
 export default {
   name: "EvaluateList",
   components: {
@@ -62,6 +64,18 @@ export default {
       loading: false,
       loadend: false
     };
+  },
+  watch: {
+    $route(n) {
+      if (n.name === NAME) {
+        this.product_id = this.$route.params.id;
+        this.loadend = false;
+        this.page = 1;
+        this.$set(this, "reply", []);
+        this.getProductReplyCount();
+        this.getProductReplyList();
+      }
+    }
   },
   mounted: function() {
     this.product_id = this.$route.params.id;

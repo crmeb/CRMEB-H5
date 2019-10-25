@@ -111,7 +111,7 @@ export default {
     return {
       url: `${VUE_APP_API_URL}/upload/image`,
       headers: {
-        Authorization: "Bearer " + this.$store.state.app.token
+        "Authori-zation": "Bearer " + this.$store.state.app.token
       },
       id: this.$route.params.id || 0,
       orderInfo: {},

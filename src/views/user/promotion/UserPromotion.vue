@@ -7,15 +7,15 @@
           提现记录<span class="iconfont icon-xiangyou"></span>
         </router-link>
       </div>
-      <div class="num">{{ Info.commissionCount }}</div>
+      <div class="num">{{ userInfo.brokerage_price || 0 }}</div>
       <div class="profit acea-row row-between-wrapper">
         <div class="item">
           <div>昨日收益</div>
-          <div class="money">{{ Info.lastDayCount }}</div>
+          <div class="money">{{ userInfo.yesterDay || 0 }}</div>
         </div>
         <div class="item">
           <div>累积已提</div>
-          <div class="money">{{ Info.extractCount }}</div>
+          <div class="money">{{ userInfo.extractTotalPrice || 0 }}</div>
         </div>
       </div>
     </div>
@@ -49,11 +49,25 @@
         <span class="iconfont icon-dingdan"></span>
         <div>推广人订单</div>
       </router-link>
+      <router-link
+        class="item acea-row row-center-wrapper row-column"
+        :to="'/user/promoter_rank'"
+      >
+        <span class="iconfont icon-paihang1"></span>
+        <div>推广人排行</div>
+      </router-link>
+      <router-link
+        class="item acea-row row-center-wrapper row-column"
+        :to="'/user/commission/rank'"
+      >
+        <span class="iconfont icon-paihang"></span>
+        <div>佣金排行</div>
+      </router-link>
     </div>
   </div>
 </template>
 <script>
-import { getSpreadInfo } from "../../../api/user";
+import { getUser } from "../../../api/user";
 
 export default {
   name: "UserPromotion",
@@ -61,11 +75,7 @@ export default {
   props: {},
   data: function() {
     return {
-      Info: {
-        lastDayCount: 0,
-        extractCount: 0,
-        commissionCount: 0
-      }
+      userInfo: {}
     };
   },
   mounted: function() {
@@ -74,9 +84,10 @@ export default {
   methods: {
     getInfo: function() {
       let that = this;
-      getSpreadInfo().then(
+      getUser().then(
         res => {
-          that.Info = res.data;
+          that.userInfo = res.data;
+          console.log(that.userInfo);
         },
         function(err) {
           that.$dialog.message(err.msg);

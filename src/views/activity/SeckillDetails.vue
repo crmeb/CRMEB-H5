@@ -71,6 +71,10 @@ import ProductWindow from "@components/ProductWindow";
 import StorePoster from "@components/StorePoster";
 import { getSeckillDetail } from "@api/activity";
 import { postCartAdd } from "@api/store";
+import { imageBase64 } from "@api/public";
+import { isWeixin } from "@utils/index";
+import { openShareAll } from "@libs/wechat";
+
 const NAME = "SeckillDetails";
 
 export default {
@@ -145,6 +149,24 @@ export default {
         that.posterData.code = that.storeInfo.code_base;
         that.setProductSelect();
         that.domStatus = true;
+        that.getImageBase64();
+        that.setShare();
+      });
+    },
+    setShare: function() {
+      isWeixin() &&
+        openShareAll({
+          desc: this.storeInfo.info,
+          title: this.storeInfo.title,
+          link: location.href,
+          imgUrl: this.storeInfo.image
+        });
+    },
+    getImageBase64: function() {
+      let that = this;
+      imageBase64(this.posterData.image, that.posterData.code).then(res => {
+        that.posterData.image = res.data.image;
+        that.posterData.code = res.data.code;
       });
     },
     updateTitle() {

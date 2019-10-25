@@ -37,10 +37,6 @@ export default {
     return {
       currents: 1,
       ProductConSwiper: {
-        pagination: {
-          el: ".swiper-pagination",
-          clickable: true
-        },
         autoplay: {
           disableOnInteraction: false,
           delay: 2000
@@ -51,7 +47,6 @@ export default {
         observeParents: true,
         on: {
           slideChangeTransitionStart: function() {
-            console.log(this.realIndex);
             that.currents = this.realIndex + 1;
           }
         }
