@@ -15,7 +15,8 @@
           </div>
           <div class="data acea-row row-between-wrapper">
             <div v-if="item.end_time !== 0">
-              {{ item.start_time }}-{{ item.end_time }}
+              {{ item.start_time ? item.start_time + "-" : ""
+              }}{{ item.end_time }}
             </div>
             <div v-else>不限时</div>
             <div class="bnt gray" v-if="item.is_use === true">已领取</div>

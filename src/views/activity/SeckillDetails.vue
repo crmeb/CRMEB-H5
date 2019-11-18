@@ -7,7 +7,7 @@
     <div class="nav acea-row row-between-wrapper">
       <div class="money">
         ￥<span class="num" v-text="storeInfo.price"></span
-        ><span class="y-money" v-text="'￥' + storeInfo.price"></span>
+        ><span class="y-money" v-text="'￥' + storeInfo.ot_price"></span>
       </div>
       <div class="acea-row row-middle">
         <div class="times">

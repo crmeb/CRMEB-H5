@@ -1,7 +1,6 @@
 export default [
   {
     path: "/activity"
-    // component: () => import("@views/home/index.vue")
   },
   {
     path: "/activity/goods_seckill",

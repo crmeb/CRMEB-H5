@@ -19,8 +19,10 @@
               购物满{{ item.use_min_price }}元可用
             </div>
             <div class="data acea-row row-between-wrapper">
-              <div v-if="item.end_time === 0">不限时</div>
-              <div v-else>{{ item.start_time }}-{{ item.end_time }}</div>
+              <div>
+                {{ item.start_time ? item.start_time + "-" : ""
+                }}{{ item.end_time }}
+              </div>
               <div
                 class="bnt acea-row row-center-wrapper"
                 :class="!item.is_use ? 'bg-color-red' : 'gray'"

@@ -114,7 +114,28 @@ export function pay(config) {
 }
 
 export function openAddress() {
-  return toPromise(instance.openAddress);
+  return new Promise((resolve, reject) => {
+    wechatEvevt("openAddress", {})
+      .then(res => {
+        console.log(res);
+        resolve(res);
+      })
+      .catch(res => {
+        console.log(res);
+        if (res.is_ready) {
+          res.wx.openAddress({
+            fail(res) {
+              reject(res);
+            },
+            success(res) {
+              resolve(res);
+            }
+          });
+        } else {
+          reject(res);
+        }
+      });
+  });
 }
 
 export function openShareAll(config) {
@@ -147,22 +168,28 @@ export function openShareTimeline(config) {
   instance.onMenuShareTimeline && instance.onMenuShareTimeline(config);
 }
 
+/**
+ * 公众号事件
+ * @param name 事件名
+ * @param config 配置
+ * @returns {Promise<unknown>}
+ */
 export function wechatEvevt(name, config) {
   return new Promise((resolve, reject) => {
+    let wx;
     let configDefault = {
       fail(res) {
-        if (res.errMsg == name + ":permission denied" && wechatObj) {
-          getWechatConfig().then(res => {
-            wechatObj.signSignature({
-              nonceStr: res.data.nonceStr,
-              signature: res.data.signature,
-              timestamp: res.data.timestamp
-            });
-            reject({ is_ready: true, wx: wechatObj.getOriginalWx() });
+        console.log(res);
+        if (wx) return reject({ is_ready: true, wx: wx });
+        getWechatConfig().then(res => {
+          wechatObj.signSignature({
+            nonceStr: res.data.nonceStr,
+            signature: res.data.signature,
+            timestamp: res.data.timestamp
           });
-        } else {
-          reject(res);
-        }
+          wx = wechatObj.getOriginalWx();
+          reject({ is_ready: true, wx: wx });
+        });
       },
       success(res) {
         resolve(res);

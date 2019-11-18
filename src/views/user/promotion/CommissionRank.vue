@@ -1,9 +1,12 @@
 <template>
   <div class="commission-rank" ref="container">
     <div class="header">
-      <div class="rank">
-        您目前的排名<span class="num">{{ position }}</span
+      <div class="rank" v-if="position">
+        您目前的排名为：第<span class="num">{{ position }}</span
         >名
+      </div>
+      <div class="rank" v-else>
+        您暂未上榜
       </div>
     </div>
     <div class="wrapper">
@@ -25,7 +28,9 @@
           :key="index"
         >
           <div class="num" v-if="index <= 2">
-            <img :src="'@assets/images/medal0' + (index + 1) + '.png'" />
+            <img src="@assets/images/medal01.png" v-if="index == 0" />
+            <img src="@assets/images/medal02.png" v-else-if="index == 1" />
+            <img src="@assets/images/medal03.png" v-else-if="index == 2" />
           </div>
           <div class="num" v-else>{{ index + 1 }}</div>
           <div class="picTxt acea-row row-between-wrapper">
@@ -117,6 +122,7 @@
 </style>
 <script>
 import { getBrokerageRank } from "@api/user";
+import { mapGetters } from "vuex";
 
 const NAME = "CommissionRank";
 export default {
@@ -135,6 +141,7 @@ export default {
       loadend: false
     };
   },
+  computed: mapGetters(["userInfo"]),
   watch: {
     $route(n) {
       if (n.name === NAME) {
@@ -143,6 +150,12 @@ export default {
         this.$set(this, "rankList", []);
         this.getBrokerageRankList();
       }
+    },
+    active() {
+      this.loaded = false;
+      this.page = 1;
+      this.$set(this, "rankList", []);
+      this.getBrokerageRankList();
     }
   },
   mounted: function() {
@@ -162,7 +175,7 @@ export default {
       getBrokerageRank({
         page: this.page,
         limit: this.limit,
-        type: this.type
+        type: this.active === 0 ? "week" : "month"
       })
         .then(res => {
           let list = res.data.rank;
@@ -173,10 +186,16 @@ export default {
           this.page++;
           this.position = res.data.position;
           this.$set(this, "rankList", this.rankList);
+          this.getUserRank();
         })
         .catch(() => {
           this.loading = false;
         });
+    },
+    getUserRank() {
+      this.rankList.forEach((item, index) => {
+        if (this.userInfo.uid == item.uid) this.position = index + 1;
+      });
     }
   }
 };

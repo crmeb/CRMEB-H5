@@ -16,7 +16,7 @@
             <img :src="item.pic" />
           </router-link>
         </swiper-slide>
-        <div class="swiper-pagination" slot="pagination"></div>
+        <div class="swiper-pagination paginationBanner" slot="pagination"></div>
       </swiper>
     </div>
     <div class="nav acea-row">
@@ -57,9 +57,13 @@
         </swiper>
       </div>
     </div>
-    <div class="specialArea acea-row row-between-wrapper">
+    <div
+      class="specialArea acea-row row-between-wrapper"
+      v-if="activityOne.wap_link !== undefined || activity.length"
+    >
       <router-link
         :to="activityOne.wap_link ? activityOne.wap_link : ''"
+        v-if="activityOne.wap_link !== undefined"
         class="assemble"
       >
         <img :src="activityOne.pic" />
@@ -115,7 +119,10 @@
         </swiper>
       </div>
     </div>
-    <div class="wrapper" v-if="info.bastList.length > 0">
+    <div
+      class="wrapper"
+      v-if="info.bastList.length > 0 || info.bastBanner.length > 0"
+    >
       <div class="title acea-row row-between-wrapper">
         <div class="text">
           <div class="name line1">精品推荐</div>
@@ -137,7 +144,7 @@
             /></router-link>
           </swiper-slide>
         </swiper>
-        <div class="swiper-pagination"></div>
+        <div class="swiper-pagination paginationBoutique"></div>
       </div>
       <Good-list :good-list="info.bastList" :is-sort="false"></Good-list>
     </div>
@@ -284,7 +291,7 @@ export default {
       couponList: [],
       swiperOption: {
         pagination: {
-          el: ".swiper-pagination",
+          el: ".paginationBanner",
           clickable: true
         },
         autoplay: {
@@ -316,7 +323,7 @@ export default {
       },
       swiperBoutique: {
         pagination: {
-          el: ".swiper-pagination",
+          el: ".paginationBoutique",
           clickable: true
         },
         autoplay: {
@@ -351,7 +358,11 @@ export default {
       }
       that.$set(that, "info", res.data.info);
       that.$set(that, "likeInfo", res.data.likeInfo);
-      that.$set(that, "lovely", res.data.lovely);
+      that.$set(
+        that,
+        "lovely",
+        res.data.lovely.length ? res.data.lovely[0] : {}
+      );
       that.$set(that, "benefit", res.data.benefit);
       that.$set(that, "couponList", res.data.couponList);
       that.setOpenShare();

@@ -1,11 +1,15 @@
 <template>
   <div class="order-submission">
-    <div class="allAddress">
+    <div
+      class="allAddress"
+      :style="store_self_mention ? '' : 'padding-top: 0.2rem'"
+    >
       <div class="nav acea-row">
         <div
           class="item font-color-red"
           :class="shipping_type === 0 ? 'on' : 'on2'"
           @click="addressType(0)"
+          v-if="store_self_mention"
         ></div>
         <div
           class="item font-color-red"
@@ -83,6 +87,20 @@
             </div>
           </div>
         </div>
+      </div>
+      <div
+        class="item acea-row row-between-wrapper"
+        v-if="
+          orderGroupInfo.priceGroup.vipPrice > 0 &&
+            userInfo.vip &&
+            pinkId == 0 &&
+            orderGroupInfo.bargain_id == 0 &&
+            orderGroupInfo.combination_id == 0 &&
+            orderGroupInfo.seckill_id == 0
+        "
+      >
+        会员优惠
+        <div class="discount">￥{{ orderGroupInfo.priceGroup.vipPrice }}</div>
       </div>
       <div class="item acea-row row-between-wrapper" v-if="shipping_type === 0">
         <div>快递费用</div>
@@ -337,7 +355,7 @@ import OrderGoods from "@components/OrderGoods";
 import CouponListWindow from "@components/CouponListWindow";
 import AddressWindow from "@components/AddressWindow";
 import { postOrderConfirm, postOrderComputed, createOrder } from "@api/order";
-import { mapGetters } from "vuex";
+import { getUser } from "@api/user";
 import { pay } from "@libs/wechat";
 import { isWeixin } from "@utils";
 
@@ -377,16 +395,19 @@ export default {
       shipping_type: 0,
       contacts: "",
       contactsTel: "",
-      store_self_mention: 0
+      store_self_mention: 0,
+      userInfo: {}
     };
   },
-  computed: mapGetters(["userInfo"]),
   watch: {
     useIntegral() {
       this.computedPrice();
     },
     $route(n) {
-      if (n.name === NAME) this.getCartInfo();
+      if (n.name === NAME) {
+        this.getUserInfo();
+        this.getCartInfo();
+      }
     },
     shipping_type() {
       this.computedPrice();
@@ -394,11 +415,19 @@ export default {
   },
   mounted: function() {
     let that = this;
+    that.getUserInfo();
     that.getCartInfo();
     if (that.$route.query.pinkid !== undefined)
       that.pinkId = that.$route.query.pinkid;
   },
   methods: {
+    getUserInfo() {
+      getUser()
+        .then(res => {
+          this.userInfo = res.data;
+        })
+        .catch(() => {});
+    },
     addressType: function(index) {
       if (index && !this.system_store.id)
         return this.$dialog.error("暂无门店信息，您无法选择到店自提！");
@@ -508,6 +537,7 @@ export default {
         .then(res => {
           this.$dialog.loading.close();
           const data = res.data;
+          let url = "/order/status/" + data.result.orderId;
           switch (data.status) {
             case "ORDER_EXIST":
             case "EXTEND_ORDER":
@@ -515,18 +545,18 @@ export default {
             case "PAY_ERROR":
               this.$dialog.toast({ mes: res.msg });
               this.$router.replace({
-                path: "/order/detail/" + data.result.orderId
+                path: url + "/0?msg=" + res.msg
               });
               break;
             case "SUCCESS":
               this.$dialog.success(res.msg);
               this.$router.replace({
-                path: "/order/detail/" + data.result.orderId
+                path: url + "/1"
               });
               break;
             case "WECHAT_H5_PAY":
               this.$router.replace({
-                path: "/order/detail/" + data.result.orderId
+                path: url + "/2"
               });
               setTimeout(() => {
                 location.href = data.result.jsConfig.mweb_url;
@@ -535,7 +565,7 @@ export default {
             case "WECHAT_PAY":
               pay(data.result.jsConfig).finally(() => {
                 this.$router.replace({
-                  path: "/order/detail/" + data.result.orderId
+                  path: url + "/4"
                 });
               });
           }

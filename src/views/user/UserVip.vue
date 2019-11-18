@@ -23,7 +23,7 @@
                 v-for="(val, indexn) in vipComplete"
                 :key="indexn"
               >
-                <div class="num">{{ val.new_number }}</div>
+                <div class="num">{{ val.number }}</div>
                 <div>{{ val.real_name }}</div>
               </div>
             </div>
@@ -91,7 +91,7 @@
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import "@assets/css/swiper.min.css";
 import Recommend from "@components/Recommend";
-import { getVipInfo, getVipTask } from "../../api/user";
+import { getVipInfo, getVipTask, setDetection } from "../../api/user";
 export default {
   name: "Poster",
   components: {
@@ -150,6 +150,7 @@ export default {
   },
   mounted: function() {
     let that = this;
+    setDetection();
     that.getInfo();
     that.swiper.on("slideChange", function() {
       that.activeIndex = that.swiper.activeIndex;

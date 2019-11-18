@@ -16,7 +16,7 @@
         <div class="rank acea-row row-bottom row-around">
           <div class="item" v-show="Two.uid">
             <div class="pictrue"><img :src="Two.avatar" /></div>
-            <div class="name line1">{{ Two.nickname }}}</div>
+            <div class="name line1">{{ Two.nickname }}</div>
             <div class="num">{{ Two.count }}人</div>
           </div>
           <div class="item" v-if="One.uid">
@@ -36,9 +36,9 @@
       <div
         class="item acea-row row-between-wrapper"
         v-for="(item, index) in rankList"
-        :key="index"
+        :key="item.nickname"
       >
-        <div class="num">{{ index + 3 }}</div>
+        <div class="num">{{ index + 4 }}</div>
         <div class="picTxt acea-row row-between-wrapper">
           <div class="pictrue"><img :src="item.avatar" /></div>
           <div class="text line1">{{ item.nickname }}</div>

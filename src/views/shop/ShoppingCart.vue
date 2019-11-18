@@ -243,14 +243,21 @@ export default {
         let checkedIds = cookie.get(CHECKED_IDS) || [];
         if (!Array.isArray(checkedIds)) checkedIds = [];
         this.cartList.valid.forEach(cart => {
-          if (checkedIds.indexOf(cart.id) !== -1) cart.checked = true;
+          if (checkedIds.length) {
+            if (checkedIds.indexOf(cart.id) !== -1) cart.checked = true;
+            else cart.checked = false;
+          } else {
+            cart.checked = true;
+            that.checkedIds.push(cart.id);
+          }
         });
         if (checkedIds.length) {
           that.checkedIds = checkedIds;
-          that.isAllSelect = checkedIds.length === this.cartList.valid.length;
-          that.carnum();
-          that.countMoney();
         }
+        that.isAllSelect =
+          that.checkedIds.length === this.cartList.valid.length;
+        that.carnum();
+        that.countMoney();
         this.loaded = true;
       });
     },

@@ -5,7 +5,7 @@ import { VUE_APP_API_URL } from "@utils/index";
 
 const instance = axios.create({
   baseURL: VUE_APP_API_URL,
-  timeout: 3000
+  timeout: 5000
 });
 
 const defaultOpt = { login: true };

@@ -338,3 +338,9 @@ export function getRankList(q) {
 export function getBrokerageRank(q) {
   return request.get("brokerage_rank", q);
 }
+/**
+ * 检测会员等级
+ */
+export function setDetection() {
+  return request.get("user/level/detection");
+}

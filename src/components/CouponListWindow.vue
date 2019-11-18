@@ -20,8 +20,10 @@
             <div class="text">
               <div class="condition line1">{{ coupon.coupon_title }}</div>
               <div class="data acea-row row-between-wrapper">
-                <div v-if="coupon.end_time === 0">不限时</div>
-                <div v-else>{{ coupon.add_time }}-{{ coupon.end_time }}</div>
+                <div>
+                  {{ coupon.start_time ? coupon.start_time + "-" : ""
+                  }}{{ coupon.end_time }}
+                </div>
                 <div
                   class="iconfont icon-xuanzhong1 font-color-red"
                   v-if="checked === coupon.id"

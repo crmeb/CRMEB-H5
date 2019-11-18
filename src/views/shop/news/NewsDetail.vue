@@ -17,7 +17,7 @@
       <div class="text">
         <div class="name line1">{{ storeInfo.store_name }}</div>
         <div class="money font-color-red">
-          ￥<span class="num">{{ storeInfo.vip_price }}</span>
+          ￥<span class="num">{{ storeInfo.ot_price }}</span>
         </div>
         <div class="y_money">￥{{ storeInfo.price }}</div>
       </div>

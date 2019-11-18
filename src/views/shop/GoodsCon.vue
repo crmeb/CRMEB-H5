@@ -1,5 +1,8 @@
 <template>
-  <div :class="[posterImageStatus ? 'noscroll product-con' : 'product-con']">
+  <div
+    :class="[posterImageStatus ? 'noscroll product-con' : 'product-con']"
+    ref="box"
+  >
     <product-con-swiper :img-urls="storeInfo.slider_image"></product-con-swiper>
     <div class="wrapper">
       <div class="share acea-row row-between row-bottom">
@@ -92,7 +95,12 @@
           <swiper :options="swiperRecommend">
             <swiper-slide v-for="(item, index) in goodList" :key="index">
               <div class="list acea-row row-middle">
-                <div class="item" v-for="val in item.list" :key="val.image">
+                <div
+                  class="item"
+                  v-for="val in item.list"
+                  :key="val.image"
+                  @click="goGoods(val)"
+                >
                   <div class="pictrue">
                     <img :src="val.image" />
                   </div>
@@ -252,7 +260,8 @@
   margin-left: 0.1rem;
 }
 .product-con .store-info .info .picTxt .text .address .addressTxt {
-  width: 4.8rem;
+  max-width: 4.8rem;
+  width: auto;
 }
 .product-con .store-info .info .iconfont {
   font-size: 0.4rem;
@@ -395,8 +404,9 @@ import { isWeixin } from "@utils/index";
 import { wechatEvevt } from "@libs/wechat";
 import { imageBase64 } from "@api/public";
 import { mapGetters } from "vuex";
+let NAME = "GoodsCon";
 export default {
-  name: "GoodsCon",
+  name: NAME,
   components: {
     swiper,
     swiperSlide,
@@ -463,6 +473,17 @@ export default {
     };
   },
   computed: mapGetters(["isLogin"]),
+  watch: {
+    $route(n) {
+      if (n.name === NAME) {
+        this.id = n.params.id;
+        this.productCon();
+      }
+    }
+  },
+  updated() {
+    window.scroll(0, 0);
+  },
   mounted: function() {
     this.id = this.$route.params.id;
     this.productCon();
@@ -472,8 +493,8 @@ export default {
     showChang: function() {
       if (isWeixin()) {
         let config = {
-          latitude: this.system_store.latitude,
-          longitude: this.system_store.longitude,
+          latitude: parseFloat(this.system_store.latitude),
+          longitude: parseFloat(this.system_store.longitude),
           name: this.system_store.name,
           address: this.system_store._detailed_address
         };
@@ -543,7 +564,6 @@ export default {
               console.log(res);
             })
             .catch(res => {
-              console.log(res);
               if (res.is_ready) {
                 res.wx.updateAppMessageShareData(configAppMessage);
                 res.wx.updateTimelineShareData(configAppMessage);
@@ -556,11 +576,11 @@ export default {
       this.shareInfoStatus = !this.shareInfoStatus;
       this.posters = false;
     },
-    shareCode: function() {
+    shareCode: function(value) {
       var that = this;
       getProductCode(that.id).then(res => {
-        that.posterData.code = res.data.code;
-        that.listenerActionSheet();
+        if (res.data.code) that.posterData.code = res.data.code;
+        value === false && that.listenerActionSheet();
       });
     },
     setPosterImageStatus: function() {
@@ -618,8 +638,11 @@ export default {
         .then(res => {
           that.posterData.image = res.data.image;
           that.posterData.code = res.data.code;
+          that.isLogin && that.shareCode();
         })
-        .catch(() => {});
+        .catch(() => {
+          that.isLogin && that.shareCode();
+        });
     },
     //默认选中属性；
     DefaultSelect: function() {
@@ -777,6 +800,9 @@ export default {
           that.storeInfo.userCollect = !that.storeInfo.userCollect;
         });
       }
+    },
+    goGoods(val) {
+      return this.$router.push({ path: "/detail/" + val.id });
     },
     //  点击加入购物车按钮
     joinCart: function() {

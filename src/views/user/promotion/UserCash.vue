@@ -59,8 +59,22 @@
         <div class="bnt bg-color-red" @click="submitted">提现</div>
       </div>
       <div :hidden="currentTab !== 1" class="list">
-        <div class="tip2">当前可提现金额: {{ commissionCount }}</div>
-        <div class="value"><input placeholder="0" v-model="post.money" /></div>
+        <div class="item acea-row row-between-wrapper">
+          <div class="name">微信号</div>
+          <div class="input">
+            <input placeholder="请输入微信号" v-model="post.weixin" />
+          </div>
+        </div>
+        <div class="item acea-row row-between-wrapper">
+          <div class="name">提现</div>
+          <div class="input">
+            <input
+              :placeholder="'最低提现金额' + minPrice"
+              v-model="post.money"
+            />
+          </div>
+        </div>
+        <div class="tip">当前可提现金额: {{ commissionCount }}</div>
         <div class="bnt bg-color-red" @click="submitted">提现</div>
       </div>
       <div :hidden="currentTab !== 2" class="list">
@@ -155,7 +169,7 @@ export default {
         weixin = this.post.weixin,
         that = this;
       if (
-        parseFloat(money) < parseFloat(that.commissionCount) ||
+        parseFloat(money) > parseFloat(that.commissionCount) ||
         parseFloat(that.commissionCount) == 0
       )
         return that.$dialog.message("余额不足");
@@ -222,7 +236,7 @@ export default {
       postCashInfo(info).then(
         res => {
           this.$dialog.message(res.msg);
-          this.router.push({ path: "/user/audit" });
+          this.$router.push({ path: "/user/audit" });
         },
         error => {
           this.$dialog.message(error.msg);

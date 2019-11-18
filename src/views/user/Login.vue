@@ -2,7 +2,8 @@
   <div class="register absolute">
     <div class="shading">
       <div class="pictrue acea-row row-center-wrapper">
-        <img src="@assets/images/logo2.png" />
+        <img :src="logoUrl" v-if="logoUrl" />
+        <img src="@assets/images/logo2.png" v-else />
       </div>
     </div>
     <div class="whiteBg" v-if="formItem === 1">
@@ -150,6 +151,7 @@ import sendVerifyCode from "@mixins/SendVerifyCode";
 import { login, loginMobile, registerVerify, register } from "@api/user";
 import attrs, { required, alpha_num, chs_phone } from "@utils/validate";
 import { validatorDefaultCatch } from "@utils/dialog";
+import { getLogo } from "@api/public";
 import dayjs from "dayjs";
 import cookie from "@utils/store/cookie";
 
@@ -166,10 +168,20 @@ export default {
       password: "",
       captcha: "",
       formItem: 1,
-      type: "login"
+      type: "login",
+      logoUrl: ""
     };
   },
+  mounted: function() {
+    this.getLogoImage();
+  },
   methods: {
+    async getLogoImage() {
+      let that = this;
+      getLogo(2).then(res => {
+        that.logoUrl = res.data.logo_url;
+      });
+    },
     async loginMobile() {
       var that = this;
       const { account, captcha } = that;

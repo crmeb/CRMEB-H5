@@ -92,3 +92,21 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.noCart {
+  margin-top: 0.17rem;
+  padding-top: 0.1rem;
+}
+
+.noCart .pictrue {
+  width: 4rem;
+  height: 3rem;
+  margin: 0.7rem auto 0.5rem auto;
+}
+
+.noCart .pictrue img {
+  width: 100%;
+  height: 100%;
+}
+</style>

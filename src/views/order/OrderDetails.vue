@@ -156,7 +156,6 @@
         <div class="name">
           {{ orderInfo.real_name
           }}<span class="phone">{{ orderInfo.user_phone }}</span>
-          <span class="iconfont icon-tonghua font-color-red"></span>
         </div>
         <div>{{ orderInfo.user_address }}</div>
       </div>
@@ -559,7 +558,7 @@ export default {
   mounted: function() {
     this.getDetail();
     this.$nextTick(function() {
-      var copybtn = document.getElementsByClassName("copy-data");
+      let copybtn = document.getElementsByClassName("copy-data");
       const clipboard = new ClipboardJS(copybtn);
       clipboard.on("success", () => {
         this.$dialog.success("复制成功");
@@ -570,8 +569,8 @@ export default {
     showChang: function() {
       if (isWeixin()) {
         let config = {
-          latitude: this.system_store.latitude,
-          longitude: this.system_store.longitude,
+          latitude: parseFloat(this.system_store.latitude),
+          longitude: parseFloat(this.system_store.longitude),
           name: this.system_store.name,
           address: this.system_store._detailed_address
         };
@@ -687,7 +686,14 @@ export default {
     },
     async toPay(type) {
       var that = this;
-      await payOrderHandle(this.orderInfo.order_id, type, that.from);
+      await payOrderHandle(this.orderInfo.order_id, type, that.from)
+        .then(() => {})
+        .catch(res => {
+          if (res.status === "WECHAT_H5_PAY")
+            that.$router.push({
+              path: "/order/status/" + that.orderInfo.order_id + "/0"
+            });
+        });
       that.getDetail();
     }
   }

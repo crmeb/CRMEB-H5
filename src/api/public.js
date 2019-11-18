@@ -88,6 +88,14 @@ export function getLogistics() {
 }
 
 /**
+ * 获取登陆logo
+ * @returns {*}
+ */
+export function getLogo(type) {
+  return request.get("/wechat/get_logo", { type: type }, { login: false });
+}
+
+/**
  * 获取图片base64
  * @retins {*}
  * */

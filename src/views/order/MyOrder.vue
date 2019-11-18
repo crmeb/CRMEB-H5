@@ -353,7 +353,11 @@ export default {
             that.changeType(type);
             that.getOrderData();
           })
-          .catch(() => {
+          .catch(res => {
+            if (res.status === "WECHAT_H5_PAY")
+              return that.$router.push({
+                path: "/order/status/" + order.order_id + "/5"
+              });
             const type = parseInt(that.$route.params.type) || 0;
             that.changeType(type);
             that.getOrderData();

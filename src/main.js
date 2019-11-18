@@ -33,7 +33,12 @@ if (!cookie.has(CACHE_KEY)) {
   cookie.set(CACHE_KEY, 1);
 }
 
-var urlSpread = parseQuery()["spread"];
+let cookieName = "VCONSOLE";
+let query = parseQuery();
+let urlSpread = query["spread"];
+let vconsole = query[cookieName.toLowerCase()];
+let md5Crmeb = "b14d1e9baeced9bb7525ab19ee35f2d2"; //CRMEB MD5 加密开启vconsole模式
+let md5UnCrmeb = "3dca2162c4e101b7656793a1af20295c"; //UN_CREMB MD5 加密关闭vconsole模式
 
 if (urlSpread !== undefined) {
   var spread = cookie.get("spread");
@@ -46,10 +51,19 @@ if (urlSpread !== undefined) {
 }
 
 const _isWechat = isWeixin();
-// const module = () => import("vconsole");
-// module().then(Module => {
-//   new Module.default();
-// });
+
+if (vconsole !== undefined) {
+  if (vconsole === md5UnCrmeb && cookie.has(cookieName))
+    cookie.remove(cookieName);
+} else vconsole = cookie.get(cookieName);
+
+if (vconsole !== undefined && vconsole === md5Crmeb) {
+  cookie.set(cookieName, md5Crmeb, 3600);
+  const module = () => import("vconsole");
+  module().then(Module => {
+    new Module.default();
+  });
+}
 
 if (_isWechat) {
   const module = () => import("@libs/wechat");

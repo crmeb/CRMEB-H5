@@ -40,7 +40,7 @@ export default [
     component: () => import("@views/order/OrderSubmission")
   },
   {
-    path: "/order/status",
+    path: "/order/status/:id/:status",
     name: "PaymentStatus",
     meta: {
       title: "支付状态",

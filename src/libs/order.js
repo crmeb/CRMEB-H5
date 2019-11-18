@@ -63,8 +63,10 @@ export function payOrderHandle(orderId, type, from) {
         dialog.loading.close();
         switch (data.status) {
           case "WECHAT_H5_PAY":
-            location.replace(data.result.jsConfig.mweb_url);
             reject(data);
+            setTimeout(() => {
+              location.replace(data.result.jsConfig.mweb_url);
+            }, 100);
             break;
           case "ORDER_EXIST":
           case "EXTEND_ORDER":
