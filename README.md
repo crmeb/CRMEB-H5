@@ -48,7 +48,7 @@ https://help.crmeb.net/crmeb
 http://bbs.crmeb.net
 
 ###  QQ交流群
- CRMEB微信开发10群:862316758 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=babe8ace21478fd489eccac3d567d9a3d3049db32f47e3915890d8d95179e642"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发10群" title="CRMEB微信开发10群"></a>
+ CRMEB微信开发11群:824195682 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=9fa928ec8346022fa33f6cd5efd83b6ba6ccd6a9d4a144beb1ddcb3c5232b3a1"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="CRMEB微信开发11群" title="CRMEB微信开发11群"></a>
 
 ## 页面展示
 ![展示图](/readme/images/展示图_01.jpg "展示图.png")
