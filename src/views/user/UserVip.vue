@@ -131,15 +131,20 @@ export default {
   },
   watch: {
     vipList: function() {
-      let that = this;
+      let that = this,
+        gradeArray = [];
       if (that.vipList.length > 0) {
         that.vipList.forEach(function(item, index) {
-          if (item.is_clear === false) {
+          if (item.is_clear === true) {
             that.swiper.slideTo(index);
             that.activeIndex = index;
-            that.grade = item.grade;
+            // that.grade = item.grade;
+            gradeArray.push(item.grade);
           }
         });
+      }
+      if (gradeArray.length) {
+        that.grade = gradeArray[0];
       }
     }
   },

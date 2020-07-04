@@ -30,14 +30,21 @@
           <div>我的余额</div>
           <div class="num">{{ userInfo.now_money || 0 }}</div>
         </router-link>
-        <router-link
-          :to="'/user/user_promotion'"
+        <!--<router-link-->
+        <!--:to="'/user/user_promotion'"-->
+        <!--class="item"-->
+        <!--v-if="userInfo.is_promoter === 1 || userInfo.statu === 2"-->
+        <!--&gt;-->
+        <div
+          @click="goPagey('/user/user_promotion')"
           class="item"
           v-if="userInfo.is_promoter === 1 || userInfo.statu === 2"
         >
           <div>当前佣金</div>
           <div class="num">{{ userInfo.brokerage_price || 0 }}</div>
-        </router-link>
+        </div>
+
+        <!--</router-link>-->
         <router-link :to="'/user/integral'" class="item" v-else>
           <div>当前积分</div>
           <div class="num">{{ userInfo.integral || 0 }}</div>
@@ -146,19 +153,26 @@
       :switchActive="switchActive"
       :login_type="userInfo.login_type"
     ></SwitchWindow>
+    <GeneralWindow
+      :generalActive="generalActive"
+      @closeGeneralWindow="closeGeneralWindow"
+      :generalContent="generalContent"
+    ></GeneralWindow>
   </div>
 </template>
+
 <script>
 import { getUser, getMenuUser } from "@api/user";
 import { isWeixin } from "@utils";
 import SwitchWindow from "@components/SwitchWindow";
-
+import GeneralWindow from "@components/GeneralWindow";
 const NAME = "User";
 
 export default {
   name: NAME,
   components: {
-    SwitchWindow
+    SwitchWindow,
+    GeneralWindow
   },
   props: {},
   data: function() {
@@ -167,7 +181,12 @@ export default {
       MyMenus: [],
       orderStatusNum: {},
       switchActive: false,
-      isWeixin: false
+      isWeixin: false,
+      generalActive: false,
+      generalContent: {
+        promoterNum: "",
+        title: ""
+      }
     };
   },
   watch: {
@@ -189,6 +208,11 @@ export default {
       getUser().then(res => {
         that.userInfo = res.data;
         that.orderStatusNum = res.data.orderStatusNum;
+        this.generalContent = {
+          promoterNum: `您在商城累计消费金额仅差 <span style="color: #ff8500;">${res
+            .data.promoter_price || 0}元</span>即可开通推广权限`,
+          title: "您未获得推广权限"
+        };
       });
     },
     MenuUser: function() {
@@ -197,17 +221,30 @@ export default {
         that.MyMenus = res.data.routine_my_menus;
       });
     },
+    goPagey(url) {
+      if (!this.userInfo.is_promoter && this.userInfo.statu == 1)
+        return this.$dialog.toast({ mes: "您还没有推广权限！！" });
+      if (!this.userInfo.is_promoter && this.userInfo.statu == 2) {
+        return (this.generalActive = true);
+      }
+      this.$router.push({ path: url });
+    },
     goPages: function(index) {
       let url = this.MyMenus[index].wap_url;
-      if (url === "/user/user_promotion" && this.userInfo.statu === 1) {
-        if (!this.userInfo.is_promoter)
+      if (url === "/user/user_promotion") {
+        if (!this.userInfo.is_promoter && this.userInfo.statu == 1)
           return this.$dialog.toast({ mes: "您还没有推广权限！！" });
+        if (!this.userInfo.is_promoter && this.userInfo.statu == 2) {
+          return (this.generalActive = true);
+        }
       }
       if (url === "/customer/index" && !this.userInfo.adminid) {
         return this.$dialog.toast({ mes: "您还不是客服！！" });
       }
-
       this.$router.push({ path: this.MyMenus[index].wap_url });
+    },
+    closeGeneralWindow(msg) {
+      this.generalActive = msg;
     }
   }
 };

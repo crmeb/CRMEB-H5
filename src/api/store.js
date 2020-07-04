@@ -56,8 +56,8 @@ export function getHostProducts(page, limit) {
 /*
  * 精品、热门、首发列表
  * */
-export function getGroomList(type) {
-  return request.get("/groom/list/" + type, {}, { login: false });
+export function getGroomList(type, data) {
+  return request.get("/groom/list/" + type, data, { login: false });
 }
 
 /*
@@ -128,4 +128,10 @@ export function postOrderProduct(unique) {
  */
 export function postOrderComment(data) {
   return request.post("/order/comment", data, { login: false });
+}
+/**
+ * 门店列表
+ */
+export function storeListApi(data) {
+  return request.get("store_list", data, { login: false });
 }

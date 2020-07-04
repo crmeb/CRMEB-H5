@@ -40,7 +40,7 @@
               <option
                 v-for="(item, index) in banks"
                 :key="index"
-                value="item"
+                :value="item"
                 >{{ item }}</option
               >
             </select>

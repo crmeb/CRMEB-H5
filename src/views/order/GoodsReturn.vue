@@ -166,3 +166,12 @@ export default {
   }
 };
 </script>
+<style scoped>
+.line2 {
+  word-break: break-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>

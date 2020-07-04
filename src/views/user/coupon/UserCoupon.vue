@@ -8,10 +8,33 @@
         :key="index"
       >
         <div class="money" :class="item._type === 0 ? 'moneyGray' : ''">
-          ￥<span class="num">{{ item.coupon_price }}</span>
+          <div>
+            ￥<span class="num">{{ item.coupon_price }}</span>
+          </div>
+          <div class="pic-num">满{{ item.use_min_price }}元可用</div>
         </div>
         <div class="text">
-          <div class="condition line1">{{ item.coupon_title }}</div>
+          <div class="condition line1">
+            <span
+              class="line-title"
+              :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'"
+              v-if="item.applicable_type === 0"
+              >通用劵</span
+            >
+            <span
+              class="line-title"
+              :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'"
+              v-else-if="item.applicable_type === 1"
+              >品类券</span
+            >
+            <span
+              class="line-title"
+              :class="item._type === 0 ? 'bg-color-huic' : 'bg-color-check'"
+              v-else
+              >商品券</span
+            >
+            <span>{{ item.coupon_title }}</span>
+          </div>
           <div class="data acea-row row-between-wrapper">
             <div v-if="item._end_time === 0">不限时</div>
             <div v-else>{{ item._add_time }}-{{ item._end_time }}</div>

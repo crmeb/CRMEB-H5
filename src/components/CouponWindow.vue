@@ -8,16 +8,22 @@
           :key="index"
         >
           <div class="money font-color-red">
-            ￥<span class="num">{{ item.coupon_price }}</span>
+            <div>
+              ￥<span class="num">{{ item.coupon_price }}</span>
+            </div>
+            <div class="pic-num">满{{ item.use_min_price }}元可用</div>
           </div>
-          <div class="text">
-            <div class="name">
-              购物买{{ item.use_min_price }}减{{ item.coupon_price }}
+          <div class="text acea-row row-between">
+            <div class="pic acea-row row-column row-center">
+              <div class="name line1">{{ item.title }}</div>
+              <div v-if="item.end_time">
+                {{ item.start_time ? item.start_time + "-" : ""
+                }}{{ item.end_time }}
+              </div>
             </div>
-            <div v-if="item.end_time">
-              {{ item.start_time ? item.start_time + "-" : ""
-              }}{{ item.end_time }}
-            </div>
+            <div class="type" v-if="item.type === 0">通用劵</div>
+            <div class="type" v-else-if="item.type === 1">品类券</div>
+            <div class="type" v-else>商品券</div>
           </div>
         </div>
         <div style="height:1.2rem"></div>
@@ -79,3 +85,9 @@ export default {
   }
 };
 </script>
+<style scoped>
+.pic-num {
+  color: #bbbbbb;
+  font-size: 0.12rem;
+}
+</style>

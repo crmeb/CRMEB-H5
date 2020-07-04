@@ -29,9 +29,11 @@
               {{ model2 || "请选择收货地址" }}
             </div>
             <CitySelect
+              ref="cityselect"
               v-model="show2"
               :callback="result2"
               :items="district"
+              :ready="ready"
               provance=""
               city=""
               area=""
@@ -74,8 +76,8 @@
 </template>
 <script type="text/babel">
 import { CitySelect } from "vue-ydui/dist/lib.rem/cityselect";
-import District from "ydui-district/dist/jd_province_city_area_id";
 import { getAddress, postAddress } from "@api/user";
+import { getCity } from "@api/public";
 import attrs, { required, chs_phone } from "@utils/validate";
 import { validatorDefaultCatch } from "@utils/dialog";
 import { openAddress } from "@libs/wechat";
@@ -89,11 +91,12 @@ export default {
     return {
       show2: false,
       model2: "",
-      district: District,
+      district: [],
       id: 0,
       userAddress: { is_default: 0 },
       address: {},
-      isWechat: isWeixin()
+      isWechat: isWeixin(),
+      ready: false
     };
   },
   mounted: function() {
@@ -101,19 +104,35 @@ export default {
     this.id = id;
     document.title = !id ? "添加地址" : "修改地址";
     this.getUserAddress();
+    this.getCityList();
   },
   methods: {
+    getCityList: function() {
+      let that = this;
+      getCity()
+        .then(res => {
+          that.district = res.data;
+          that.ready = true;
+        })
+        .catch(err => {
+          that.$dialog.error(err.msg);
+        });
+    },
     getUserAddress: function() {
       if (!this.id) return false;
       let that = this;
-      getAddress(that.id).then(res => {
-        that.userAddress = res.data;
-        that.model2 =
-          res.data.province + " " + res.data.city + " " + res.data.district;
-        that.address.province = res.data.province;
-        that.address.city = res.data.city;
-        that.address.district = res.data.district;
-      });
+      getAddress(that.id)
+        .then(res => {
+          that.userAddress = res.data;
+          that.model2 =
+            res.data.province + " " + res.data.city + " " + res.data.district;
+          that.address.province = res.data.province;
+          that.address.city = res.data.city;
+          that.address.city_id = res.data.city_id;
+        })
+        .catch(err => {
+          that.$dialog.error(err.msg);
+        });
     },
     getAddress() {
       openAddress().then(userInfo => {
@@ -129,7 +148,8 @@ export default {
           },
           detail: userInfo.detailInfo,
           is_default: 1,
-          post_code: userInfo.postalCode
+          post_code: userInfo.postalCode,
+          type: 1
         })
           .then(() => {
             this.$dialog.loading.close();
@@ -175,11 +195,15 @@ export default {
             is_default: isDefault,
             post_code: ""
           };
-        postAddress(data).then(function() {
-          if (that.id) that.$dialog.toast({ mes: "修改成功" });
-          else that.$dialog.toast({ mes: "添加成功" });
-          that.$router.go(-1);
-        });
+        postAddress(data)
+          .then(function() {
+            if (that.id) that.$dialog.toast({ mes: "修改成功" });
+            else that.$dialog.toast({ mes: "添加成功" });
+            that.$router.go(-1);
+          })
+          .catch(err => {
+            that.$dialog.error(err.msg);
+          });
       } catch (e) {
         this.$dialog.error(e.msg);
       }
@@ -191,6 +215,7 @@ export default {
       this.model2 = ret.itemName1 + " " + ret.itemName2 + " " + ret.itemName3;
       this.address.province = ret.itemName1;
       this.address.city = ret.itemName2;
+      this.address.city_id = ret.itemValue2;
       this.address.district = ret.itemName3;
     }
   }

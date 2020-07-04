@@ -3,7 +3,7 @@
     <!--失败时： 用icon-iconfontguanbi fail替换icon-duihao2 bg-color-red-->
     <div
       class="iconfont icon-duihao2 bg-color-red"
-      v-if="!isWeixin || orderInfo.paid || orderInfo.pay_type == 'offline'"
+      v-if="orderInfo.paid || orderInfo.pay_type == 'offline'"
     ></div>
     <div class="iconfont icon-iconfontguanbi fail" v-else></div>
     <!-- 失败时：订单支付失败 -->
@@ -25,7 +25,7 @@
       </div>
       <div class="item acea-row row-between-wrapper">
         <div>下单时间</div>
-        <div class="itemCom" v-text="orderInfo.add_time"></div>
+        <div class="itemCom" v-text="orderInfo._add_time"></div>
       </div>
       <div class="item acea-row row-between-wrapper">
         <div>支付方式</div>

@@ -28,14 +28,24 @@
                 <div class="text line1">{{ val.nickname }}</div>
               </div>
               <div class="money">
-                返佣：<span class="font-color-red"
-                  >￥{{ val.number ? val.number : 0 }}</span
-                >
+                <div v-if="val.type === 'pay_money'">
+                  暂未返佣
+                </div>
+                <div v-else>
+                  返佣：<span class="font-color-red"
+                    >￥{{ val.number ? val.number : 0 }}</span
+                  >
+                </div>
               </div>
             </div>
             <div class="bottom">
               <div><span class="name">订单号：</span>{{ val.order_id }}</div>
-              <div><span class="name">下单时间：</span>{{ val.time }}</div>
+              <div v-if="val.type === 'pay_money'">
+                <span class="name">下单时间：</span>{{ val.time }}
+              </div>
+              <div v-else>
+                <span class="name">返佣时间：</span>{{ val.time }}
+              </div>
             </div>
           </div>
         </div>

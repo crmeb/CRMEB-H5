@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="container">
     <div class="searchGood">
       <div class="search acea-row row-between-wrapper">
         <div class="input acea-row row-between-wrapper">
@@ -23,24 +23,38 @@
         </div>
       </div>
       <div class="line"></div>
-      <!--      <GoodList></GoodList>-->
+      <GoodList :goodList="goodList" :isSort="false"></GoodList>
+      <Loading
+        :loaded="loadend"
+        :loading="loading"
+        v-if="goodList.length"
+      ></Loading>
     </div>
-    <!--<div class="noCommodity">-->
-    <!--<div class="noPictrue">-->
-    <!--<img src="@assets/images/noSearch.png" class="image" />-->
-    <!--</div>-->
-    <!--<recommend></recommend>-->
-    <!--</div>-->
+    <div
+      class="noCommodity"
+      v-cloak
+      v-if="goodList.length === 0 && where.page > 1"
+    >
+      <div class="noPictrue">
+        <img src="@assets/images/noSearch.png" class="image" />
+      </div>
+      <recommend></recommend>
+    </div>
   </div>
 </template>
 <script>
-// import GoodList from "@components/GoodList";
+import Loading from "@components/Loading";
+import GoodList from "@components/GoodList";
 import { getSearchKeyword } from "@api/store";
 import { trim } from "@utils";
-// import Recommend from "@components/Recommend";
+import { getProducts } from "@api/store";
+import Recommend from "@components/Recommend";
 export default {
   name: "GoodSearch",
   components: {
+    GoodList,
+    Loading,
+    Recommend
     // Recommend,
     // GoodList
   },
@@ -48,24 +62,62 @@ export default {
   data: function() {
     return {
       keywords: [],
-      search: ""
+      search: "",
+      where: {
+        page: 1,
+        limit: 20,
+        keyword: ""
+      },
+      loading: false,
+      loadend: false,
+      goodList: []
     };
   },
   mounted: function() {
     this.getData();
+    this.$scroll(this.$refs.container, () => {
+      console.log(123);
+      !this.loading && this.getGoodlist();
+    });
   },
   methods: {
     submit() {
       const search = trim(this.search) || "";
       if (!search) return;
-      this.toSearch(search);
+      this.where.keyword = search;
+      this.$set(this, "goodList", []);
+      this.where.page = 1;
+      this.loadend = false;
+      this.loading = false;
+      this.getGoodlist();
     },
-    toSearch(s) {
-      this.$router.push({ path: "/goods_list", query: { s } });
-    },
+    // toSearch(s) {
+    //   this.$router.push({ path: "/goods_list", query: { s } });
+    // },
     getData() {
       getSearchKeyword().then(res => {
         this.keywords = res.data;
+      });
+    },
+    toSearch: function(key) {
+      this.where.keyword = key;
+      this.$set(this, "goodList", []);
+      this.where.page = 1;
+      this.loadend = false;
+      this.loading = false;
+      this.getGoodlist();
+    },
+    getGoodlist: function() {
+      let that = this;
+      if (that.loading) return; //阻止下次请求（false可以进行请求）；
+      if (that.loadend) return; //阻止结束当前请求（false可以进行请求）；
+      that.loading = true;
+      let q = that.where;
+      getProducts(q).then(res => {
+        that.loading = false;
+        that.goodList.push.apply(that.goodList, res.data);
+        that.loadend = res.data.length < that.where.limit; //判断所有数据是否加载完成；
+        that.where.page = that.where.page + 1;
       });
     }
   }

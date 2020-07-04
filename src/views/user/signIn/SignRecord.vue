@@ -33,7 +33,7 @@ export default {
   data: function() {
     return {
       page: 1,
-      limit: 3,
+      limit: 5,
       signList: [],
       loading: false,
       loadend: false,
@@ -49,16 +49,19 @@ export default {
   methods: {
     signListTap: function() {
       let that = this;
-      if (that.loading) return; //阻止下次请求（false可以进行请求）；
-      if (that.loadend) return; //阻止结束当前请求（false可以进行请求）；
+      if (that.loading || that.loaded) return;
       that.loading = true;
-      getSignMonth(that.page, that.limit).then(res => {
-        that.loading = false;
-        //apply();js将一个数组插入另一个数组;
-        that.signList.push.apply(that.signList, res.data);
-        that.loadend = res.data.length < that.limit; //判断所有数据是否加载完成；
-        that.page = that.page + 1;
-      });
+      getSignMonth(that.page, that.limit).then(
+        res => {
+          that.loading = false;
+          that.loaded = res.data.length < that.limit;
+          that.page = that.page + 1;
+          that.signList.push.apply(that.signList, res.data);
+        },
+        error => {
+          that.$dialog.message(error.msg);
+        }
+      );
     }
   }
 };

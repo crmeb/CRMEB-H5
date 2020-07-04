@@ -13,7 +13,12 @@
       <div class="time">{{ item.add_time }} {{ item.suk }}</div>
       <div class="evaluate-infor">{{ item.comment }}</div>
       <div class="imgList acea-row">
-        <div class="pictrue" v-for="(itemn, index) in item.pics" :key="index">
+        <div
+          class="pictrue"
+          v-for="(itemn, index) in item.pics"
+          :key="index"
+          @click="openIview(item.pics, index)"
+        >
           <img :src="itemn" class="image" />
         </div>
       </div>
@@ -26,6 +31,10 @@
   </div>
 </template>
 <script>
+import Vue from "vue";
+import { ImagePreview } from "vant";
+
+Vue.use(ImagePreview);
 export default {
   name: "UserEvaluation",
   props: {
@@ -38,6 +47,15 @@ export default {
     return {};
   },
   mounted: function() {},
-  methods: {}
+  methods: {
+    openIview(item, index) {
+      ImagePreview({
+        images: item,
+        startPosition: index,
+        maxZoom: 3,
+        minZoom: 1 / 3
+      });
+    }
+  }
 };
 </script>

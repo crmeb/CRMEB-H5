@@ -1,28 +1,43 @@
 <template>
   <div class="goodList">
-    <router-link
-      :to="{ path: '/detail/' + item.id }"
-      class="item acea-row row-between-wrapper"
+    <div
+      @click="goDetail(item)"
       v-for="(item, index) in goodList"
       :key="index"
+      class="item acea-row row-between-wrapper"
     >
       <div class="pictrue">
-        <img :src="item.image" class="image" />
-        <img
-          src="@assets/images/one.png"
-          class="numPic"
-          v-if="isSort === true && index === 0"
-        />
-        <img
-          src="@assets/images/two.png"
-          class="numPic"
-          v-if="isSort === true && index === 1"
-        />
-        <img
-          src="@assets/images/three.png"
-          class="numPic"
-          v-if="isSort === true && index === 2"
-        />
+        <img v-lazy="item.image" alt="img" class="image" />
+        <span
+          class="pictrue_log pictrue_log_class"
+          v-if="item.activity && item.activity.type === '1'"
+          >秒杀</span
+        >
+        <span
+          class="pictrue_log pictrue_log_class"
+          v-if="item.activity && item.activity.type === '2'"
+          >砍价</span
+        >
+        <span
+          class="pictrue_log pictrue_log_class"
+          v-if="item.activity && item.activity.type === '3'"
+          >拼团</span
+        >
+        <!--<img-->
+        <!--src="@assets/images/one.png"-->
+        <!--class="numPic"-->
+        <!--v-if="isSort === true && index === 0"-->
+        <!--/>-->
+        <!--<img-->
+        <!--src="@assets/images/two.png"-->
+        <!--class="numPic"-->
+        <!--v-if="isSort === true && index === 1"-->
+        <!--/>-->
+        <!--<img-->
+        <!--src="@assets/images/three.png"-->
+        <!--class="numPic"-->
+        <!--v-if="isSort === true && index === 2"-->
+        <!--/>-->
       </div>
       <div class="underline">
         <div class="text">
@@ -42,10 +57,11 @@
       <div
         class="iconfont icon-gouwuche cart-color acea-row row-center-wrapper"
       ></div>
-    </router-link>
+    </div>
   </div>
 </template>
 <script>
+import { goShopDetail } from "@libs/order";
 export default {
   name: "GoodList",
   props: {
@@ -60,6 +76,14 @@ export default {
   },
   data: function() {
     return {};
+  },
+  methods: {
+    // 商品详情跳转
+    goDetail(item) {
+      goShopDetail(item).then(() => {
+        this.$router.push({ path: "/detail/" + item.id });
+      });
+    }
   }
 };
 </script>

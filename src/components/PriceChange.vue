@@ -77,9 +77,15 @@
         ></textarea>
       </div>
       <div class="modify" @click="save">
-        {{ orderInfo.refund_status === 0 ? "立即修改" : "确认退款" }}
+        {{
+          status === 1 || orderInfo.refund_status == 0 ? "立即修改" : "确认退款"
+        }}
       </div>
-      <div class="modify1" @click="refuse" v-if="orderInfo.refund_status === 1">
+      <div
+        class="modify1"
+        @click="refuse"
+        v-if="orderInfo.refund_status === 1 && status === 0"
+      >
         拒绝退款
       </div>
     </div>

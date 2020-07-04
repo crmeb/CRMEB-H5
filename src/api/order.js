@@ -27,8 +27,8 @@ export function postOrderComputed(key, data) {
  * @param price
  * @returns {*}
  */
-export function getOrderCoupon(price) {
-  return request.get("/coupons/order/" + (parseFloat(price) || 0));
+export function getOrderCoupon(price, data) {
+  return request.get("/coupons/order/" + (parseFloat(price) || 0), data);
 }
 
 /**
@@ -126,4 +126,12 @@ export function payOrder(uni, paytype, from) {
  */
 export function orderVerific(verify_code, is_confirm) {
   return request.post("order/order_verific", { verify_code, is_confirm });
+}
+/**
+ * 再次下单
+ * @param string uni
+ *
+ */
+export function orderAgain(uni) {
+  return request.post("order/again", { uni: uni });
 }

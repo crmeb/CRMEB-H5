@@ -6,20 +6,35 @@
       <span class="iconfont icon-zhuangshixian lefticon"></span>
     </div>
     <div class="recommendList acea-row row-between-wrapper">
-      <router-link
-        :to="{ path: '/detail/' + item.id }"
-        class="item"
+      <div
+        @click="goDetail(item)"
         v-for="(item, index) in hostProduct"
         :key="index"
+        class="item"
       >
         <div class="pictrue">
-          <img :src="item.image" class="image" />
+          <img v-lazy="item.image" alt="img" class="image" />
+          <span
+            class="pictrue_log_big pictrue_log_class"
+            v-if="item.activity && item.activity.type === '1'"
+            >秒杀</span
+          >
+          <span
+            class="pictrue_log_big pictrue_log_class"
+            v-if="item.activity && item.activity.type === '2'"
+            >砍价</span
+          >
+          <span
+            class="pictrue_log_big pictrue_log_class"
+            v-if="item.activity && item.activity.type === '3'"
+            >拼团</span
+          >
         </div>
         <div class="name line1">{{ item.store_name }}</div>
         <div class="money font-color-red">
           ￥<span class="num">{{ item.price }}</span>
         </div>
-      </router-link>
+      </div>
     </div>
     <Loading :loaded="loadend" :loading="loading"></Loading>
   </div>
@@ -27,6 +42,7 @@
 <script>
 import { getHostProducts } from "@api/store";
 import Loading from "@components/Loading";
+import { goShopDetail } from "@libs/order";
 export default {
   name: "Recommend",
   props: {},
@@ -50,6 +66,12 @@ export default {
     });
   },
   methods: {
+    // 商品详情跳转
+    goDetail(item) {
+      goShopDetail(item).then(() => {
+        this.$router.push({ path: "/detail/" + item.id });
+      });
+    },
     hostProducts: function() {
       let that = this;
       if (that.loading) return; //阻止下次请求（false可以进行请求）；

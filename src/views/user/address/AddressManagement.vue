@@ -179,6 +179,7 @@ export default {
           },
           detail: userInfo.detailInfo,
           post_code: userInfo.postalCode,
+          type: 1,
           wx_export: 1
         })
           .then(() => {

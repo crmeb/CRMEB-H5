@@ -47,18 +47,34 @@
       :class="Switch === true ? '' : 'on'"
       ref="container"
     >
-      <router-link
-        :to="{
-          path: '/detail/' + item.id
-        }"
-        class="item"
-        :class="Switch === true ? '' : 'on'"
+      <div
+        @click="goDetail(item)"
         v-for="(item, index) in productList"
         :key="index"
+        class="item"
+        :class="Switch === true ? '' : 'on'"
         :title="item.store_name"
       >
         <div class="pictrue" :class="Switch === true ? '' : 'on'">
           <img :src="item.image" :class="Switch === true ? '' : 'on'" />
+          <span
+            class="pictrue_log_class"
+            :class="Switch === true ? 'pictrue_log_big' : 'pictrue_log'"
+            v-if="item.activity && item.activity.type === '1'"
+            >秒杀</span
+          >
+          <span
+            class="pictrue_log_class"
+            :class="Switch === true ? 'pictrue_log_big' : 'pictrue_log'"
+            v-if="item.activity && item.activity.type === '2'"
+            >砍价</span
+          >
+          <span
+            class="pictrue_log_class"
+            :class="Switch === true ? 'pictrue_log_big' : 'pictrue_log'"
+            v-if="item.activity && item.activity.type === '3'"
+            >拼团</span
+          >
         </div>
         <div class="text" :class="Switch === true ? '' : 'on'">
           <div class="name line1">{{ item.store_name }}</div>
@@ -78,7 +94,7 @@
             <div>已售{{ item.sales }}件</div>
           </div>
         </div>
-      </router-link>
+      </div>
     </div>
     <Loading :loaded="loadend" :loading="loading"></Loading>
     <div
@@ -94,11 +110,13 @@
     <Recommend v-if="productList.length === 0 && where.page > 1"></Recommend>
   </div>
 </template>
+
 <script>
 import Recommend from "@components/Recommend";
 import { getProducts } from "@api/store";
 import debounce from "lodash.debounce";
 import Loading from "@components/Loading";
+import { goShopDetail } from "@libs/order";
 
 export default {
   name: "GoodsList",
@@ -163,6 +181,12 @@ export default {
     });
   },
   methods: {
+    // 商品详情跳转
+    goDetail(item) {
+      goShopDetail(item).then(() => {
+        this.$router.push({ path: "/detail/" + item.id });
+      });
+    },
     updateTitle() {
       document.title = this.title || this.$route.meta.title;
     },

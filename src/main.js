@@ -16,7 +16,14 @@ import "@assets/css/base.css";
 import "@assets/css/reset.css";
 import "@assets/css/style.css";
 import { isWeixin, parseQuery } from "@utils";
+import vueLazyLoad from "vue-lazyload";
 
+Vue.use(vueLazyLoad, {
+  preload: 1.3, //加载高度比。
+  loading: require("@assets/images/noPictrue.png"), //加载时的过渡图片
+  error: require("@assets/images/err.png"), //加载失败的图片
+  attempt: 1 //每次加载的张数。
+});
 Vue.use(animate);
 Vue.config.productionTip = false;
 Vue.config.devtools = process.env.NODE_ENV !== "production";

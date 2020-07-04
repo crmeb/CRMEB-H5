@@ -1,5 +1,59 @@
 <template>
   <div class="broadcast-details">
+    <div class="broadcast-details_order">
+      <div class="broadcast-details_box" v-if="productId && productInfo.id">
+        <div class="broadcast_details_img">
+          <img :src="productInfo.image" />
+        </div>
+        <div class="broadcast_details_picBox">
+          <div
+            class="broadcast_details_tit"
+            v-text="productInfo.store_name"
+          ></div>
+          <div class="acea-row row-between">
+            <div class="broadcast_details_pic">
+              ￥{{ productInfo.price
+              }}<span class="broadcast_details_pic_num"
+                >￥{{ productInfo.ot_price }}</span
+              >
+            </div>
+            <div class="broadcast_details_btn" @click="sendProduct">
+              发送客服
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="broadcast_box" v-if="orderId && orderInfo.id">
+        <div class="broadcast-details_num broadcast_num">
+          <span>订单号：{{ orderInfo.order_id }}</span>
+          <span>{{ orderInfo.add_time_y }} {{ orderInfo.add_time_h }}</span>
+        </div>
+        <div class="broadcast-details_box">
+          <div class="broadcast_details_img">
+            <img :src="cartInfo.productInfo.image" />
+            <div class="broadcast_details_model">
+              {{ orderInfo.cartInfo ? orderInfo.cartInfo.length : 0 }}件商品
+            </div>
+          </div>
+          <div class="broadcast_details_picBox">
+            <div class="broadcast_details_tit">
+              {{ cartInfo.productInfo.store_name }}
+            </div>
+            <div class="acea-row row-between">
+              <div class="broadcast_details_pic">
+                ￥{{ cartInfo.productInfo.price
+                }}<span class="broadcast_details_pic_num"
+                  >￥{{ cartInfo.productInfo.ot_price }}</span
+                >
+              </div>
+              <div class="broadcast_details_btn" @click="sendOrder">
+                发送客服
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="chat" ref="chat">
       <template v-for="item in history">
         <div
@@ -11,6 +65,78 @@
           <div class="text">
             <div class="name">{{ item.nickname }}</div>
             <div class="acea-row">
+              <!--商品链接-->
+              <div v-if="item.msn_type === 6 && item.orderInfo.id">
+                <router-link
+                  class="broadcast-details_num"
+                  :to="{
+                    path: '/customer/orderdetail/' + item.orderInfo.order_id
+                  }"
+                >
+                  <span>订单号：{{ item.orderInfo.order_id }}</span>
+                </router-link>
+                <div class="conter acea-row row-middle">
+                  <div
+                    class="broadcast-details_order noPad"
+                    v-for="(val, inx) in item.orderInfo.cartInfo"
+                    :key="val.id"
+                  >
+                    <router-link
+                      class="broadcast-details_box noPad"
+                      :to="{ path: '/detail/' + val.product_id }"
+                      v-if="inx == 0"
+                    >
+                      <div class="broadcast_details_img">
+                        <img :src="val.productInfo.image" />
+                        <div class="broadcast_details_model">
+                          {{
+                            item.orderInfo.cartInfo
+                              ? item.orderInfo.cartInfo.length
+                              : 0
+                          }}件商品
+                        </div>
+                      </div>
+                      <div class="broadcast_details_picBox noPad">
+                        <div
+                          class="broadcast_details_tit"
+                          v-text="val.productInfo.store_name"
+                        ></div>
+                        <div class="broadcast_details_pic">
+                          ￥{{ val.productInfo.price }}
+                        </div>
+                      </div>
+                    </router-link>
+                  </div>
+                </div>
+              </div>
+
+              <!--商品链接-->
+              <div
+                class="conter acea-row row-middle"
+                v-if="item.msn_type === 5"
+              >
+                <div class=" noPad">
+                  <router-link
+                    class="acea-row row-column-around noPad"
+                    v-if="item.productInfo.id"
+                    :to="{ path: '/detail/' + item.productInfo.id }"
+                  >
+                    <div class="broadcast_details_img_no">
+                      <img :src="item.productInfo.image" />
+                    </div>
+                    <div class="broadcast_details_picBox_no noPad">
+                      <div class="broadcast_details_pic">
+                        ￥{{ item.productInfo.price }}
+                      </div>
+                      <div
+                        class="broadcast_details_tit_no"
+                        v-text="item.productInfo.store_name"
+                      ></div>
+                    </div>
+                  </router-link>
+                </div>
+              </div>
+
               <div
                 class="conter acea-row row-middle"
                 v-if="item.msn_type === 4"
@@ -50,6 +176,74 @@
           <div class="text textR">
             <div class="name">{{ item.nickname }}</div>
             <div class="acea-row ">
+              <!--商品链接-->
+              <router-link
+                v-if="item.msn_type === 6 && item.orderInfo.id"
+                :to="{
+                  path: '/customer/orderdetail/' + item.orderInfo.order_id
+                }"
+              >
+                <div class="broadcast-details_num">
+                  <span>订单号：{{ item.orderInfo.order_id }}</span>
+                </div>
+                <div class="conter acea-row row-middle">
+                  <div
+                    class="broadcast-details_order noPad"
+                    v-for="(val, inx) in item.orderInfo.cartInfo"
+                    :key="val.id"
+                  >
+                    <div class="broadcast-details_box noPad" v-if="inx == 0">
+                      <div class="broadcast_details_img">
+                        <img :src="val.productInfo.image" />
+                        <div class="broadcast_details_model">
+                          {{
+                            item.orderInfo.cartInfo
+                              ? item.orderInfo.cartInfo.length
+                              : 0
+                          }}件商品
+                        </div>
+                      </div>
+                      <div class="broadcast_details_picBox noPad">
+                        <div
+                          class="broadcast_details_tit"
+                          v-text="val.productInfo.store_name"
+                        ></div>
+                        <div class="broadcast_details_pic">
+                          ￥{{ val.productInfo.price }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </router-link>
+
+              <!--商品链接-->
+              <div
+                class="conter acea-row row-middle"
+                v-if="item.msn_type === 5"
+              >
+                <div class=" noPad">
+                  <router-link
+                    class="acea-row row-column-around noPad"
+                    v-if="item.productInfo.id"
+                    :to="{ path: '/detail/' + item.productInfo.id }"
+                  >
+                    <div class="broadcast_details_img_no">
+                      <img :src="item.productInfo.image" />
+                    </div>
+                    <div class="broadcast_details_picBox_no noPad">
+                      <div class="broadcast_details_pic">
+                        ￥{{ item.productInfo.price }}
+                      </div>
+                      <div
+                        class="broadcast_details_tit_no"
+                        v-text="item.productInfo.store_name"
+                      ></div>
+                    </div>
+                  </router-link>
+                </div>
+              </div>
+
               <div
                 class="conter acea-row row-middle"
                 v-if="item.msn_type === 4"
@@ -195,6 +389,8 @@ import "emoji-awesome/dist/css/google.min.css";
 import emojiList from "@utils/emoji";
 import Socket from "@libs/chat";
 import { getChatRecord } from "@api/user";
+import { getProductDetail } from "@api/store";
+import { orderDetail } from "@api/order";
 import VueCoreImageUpload from "vue-core-image-upload";
 import { VUE_APP_API_URL } from "@utils";
 
@@ -207,7 +403,6 @@ const chunk = function(arr, num) {
     }
     ret[ret.length - 1].push(item);
   });
-  console.log(ret);
   return ret;
 };
 
@@ -257,8 +452,24 @@ export default {
       loaded: false,
       history: [],
       sendColor: false,
-      sendtxt: ""
+      sendtxt: "",
+      productId: parseInt(this.$route.params.productId) || 0,
+      productInfo: {},
+      orderId: this.$route.query.orderId || "",
+      orderInfo: {},
+      cartInfo: {}
     };
+  },
+  watch: {
+    $route(n) {
+      if (n.name === NAME) {
+        if (n.params.productId) this.productId = n.params.productId;
+        else this.productId = 0;
+
+        if (n.query.orderId) this.orderId = n.query.orderId;
+        else this.orderId = "";
+      }
+    }
   },
   beforeDestroy() {
     this.socket && this.socket.close();
@@ -266,6 +477,8 @@ export default {
   mounted: function() {
     this.height();
     this.getHistory();
+    this.getproductInfo();
+    this.getOrderInfo();
     this.socket = new Socket();
     this.socket.vm(this);
     this.$on(["reply", "chat"], data => {
@@ -292,6 +505,28 @@ export default {
     document.removeEventListener("scroll", this.scroll);
   },
   methods: {
+    getOrderInfo() {
+      if (!this.orderId) return;
+      orderDetail(this.orderId).then(res => {
+        this.orderInfo = res.data;
+        if (this.orderInfo.add_time_h) {
+          this.orderInfo.add_time_h = this.orderInfo.add_time_h.substring(
+            0,
+            this.orderInfo.add_time_h.lastIndexOf(":")
+          );
+        }
+        if (this.orderInfo.cartInfo.length) {
+          this.cartInfo = this.orderInfo.cartInfo[0];
+        }
+      });
+    },
+    getproductInfo() {
+      let that = this;
+      if (!this.productId) return;
+      getProductDetail(this.productId).then(res => {
+        that.productInfo = res.data.storeInfo;
+      });
+    },
     scroll() {
       if (window.scrollY < 300 && !this.loaded && !this.loading)
         this.getHistory();
@@ -357,6 +592,16 @@ export default {
         this.sendMsg(this.$refs.input.innerHTML, 1);
         this.$refs.input.innerHTML = "";
       }
+    },
+    sendProduct() {
+      this.sendMsg(this.productId, 5);
+      this.productId = 0;
+      this.productInfo = {};
+    },
+    sendOrder() {
+      this.sendMsg(this.orderId, 6);
+      this.orderId = 0;
+      this.orderInfo = {};
     },
     keydown: function($event) {
       if ($event.keyCode === 13) {
@@ -433,6 +678,120 @@ export default {
 </script>
 
 <style scoped>
+.broadcast_num {
+  padding: 0 0.1rem !important;
+}
+.noPad {
+  padding: 0 !important;
+  margin-bottom: 0 !important;
+  height: auto !important;
+}
+.broadcast-details_num {
+  width: 100%;
+  height: 0.8rem;
+  line-height: 0.8rem;
+  color: #000000;
+  font-size: 0.26rem;
+  display: flex;
+  justify-content: space-between;
+  background: #fff;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+  padding: 0 0.24rem;
+}
+.broadcast-details_order {
+  padding: 0.15rem;
+}
+.broadcast-details_box {
+  padding: 0.24rem;
+  display: flex;
+  background: #fff;
+  border-radius: 6px;
+  margin-bottom: 0.24rem;
+}
+.broadcast_details_model {
+  width: 100%;
+  height: 0.43rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0px 0px 8px 8px;
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  font-size: 0.22rem;
+  color: #fff;
+  text-align: center;
+  line-height: 0.43rem;
+}
+.broadcast_details_img {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.broadcast_details_img img {
+  width: 100%;
+  height: 100%;
+}
+
+.broadcast_details_img_no {
+  width: 100%;
+  height: auto;
+  border-radius: 8px 8px 0px 0px;
+  overflow: hidden;
+  margin-bottom: 0.1rem;
+}
+.broadcast_details_picBox_no {
+  width: 100%;
+}
+.broadcast_details_img_no img {
+  width: 100%;
+  height: 100%;
+}
+.broadcast_details_tit {
+  font-size: 0.28rem;
+  color: #333333;
+  height: 0.85rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-align: left !important;
+}
+.broadcast_details_tit_no {
+  font-size: 0.28rem;
+  color: #333333;
+  font-weight: 800;
+  text-align: left;
+  margin-top: 0.05rem;
+}
+.broadcast_details_picBox {
+  width: 75%;
+  margin-left: 0.24rem;
+}
+.broadcast_details_pic {
+  font-size: 0.36rem;
+  color: #e93323;
+  text-align: left;
+}
+.broadcast_details_pic_num {
+  text-decoration: line-through;
+  font-size: 0.28rem;
+  color: rgba(0, 0, 0, 0.5);
+  margin-left: 0.1rem;
+}
+.broadcast_details_btn {
+  width: 1.6rem;
+  height: 0.5rem;
+  background: #e83323;
+  opacity: 1;
+  border-radius: 12.5rem;
+  color: #fff;
+  font-size: 0.24rem;
+  text-align: center;
+  line-height: 0.5rem;
+}
 .broadcast-details .chat {
   padding: 0.01rem 0.23rem 0 0.3rem;
   margin-bottom: 0.3rem;

@@ -223,7 +223,7 @@ export default [
     component: () => import("@views/user/promotion/UserCash.vue")
   },
   {
-    path: "/customer/list",
+    path: "/customer/list/:productId?",
     name: "CustomerList",
     meta: {
       title: "客服列表",

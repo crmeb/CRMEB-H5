@@ -1,5 +1,5 @@
 <template>
-  <div class="quality-recommend">
+  <div class="quality-recommend" ref="container">
     <div class="slider-banner swiper">
       <swiper class="swiper-wrapper" :options="RecommendSwiper">
         <swiperSlide
@@ -20,19 +20,22 @@
       <div class="line"></div>
     </div>
     <Promotion-good :benefit="goodsList"></Promotion-good>
+    <Loading :loadend="loadend" :loading="loading"></Loading>
   </div>
 </template>
 <script>
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import "@assets/css/swiper.min.css";
 import PromotionGood from "@components/PromotionGood";
+import Loading from "@components/Loading";
 import { getGroomList } from "@api/store";
 export default {
   name: "GoodsPromotion",
   components: {
     swiper,
     swiperSlide,
-    PromotionGood
+    PromotionGood,
+    Loading
   },
   props: {},
   data: function() {
@@ -52,21 +55,36 @@ export default {
         speed: 1000,
         observer: true,
         observeParents: true
-      }
+      },
+      page: 1,
+      limit: 20,
+      loading: false,
+      loadend: false
     };
   },
   mounted: function() {
     this.getIndexGroomList();
+    this.$scroll(this.$refs.container, () => {
+      !this.loading && this.getIndexGroomList();
+    });
   },
   methods: {
     getIndexGroomList: function() {
       let that = this;
-      getGroomList(4)
+      if (that.loading) return; //阻止下次请求（false可以进行请求）；
+      if (that.loadend) return; //阻止结束当前请求（false可以进行请求）；
+      that.loading = true;
+      let q = { page: that.page, limit: that.limit };
+      getGroomList(4, q)
         .then(res => {
+          that.loading = false;
           that.imgUrls = res.data.banner;
-          that.goodsList = res.data.list;
+          //apply();js将一个数组插入另一个数组;
+          that.goodsList.push.apply(that.goodsList, res.data.list);
+          that.loadend = res.data.list.length < that.limit; //判断所有数据是否加载完成；
+          that.page = that.page + 1;
         })
-        .catch(function(res) {
+        .catch(res => {
           this.$dialog.toast({ mes: res.msg });
         });
     }

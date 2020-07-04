@@ -36,7 +36,6 @@
 import UserEvaluation from "@components/UserEvaluation";
 import { getReplyConfig, getReplyList } from "@api/store";
 import Loading from "@components/Loading";
-
 let NAME = "EvaluateList";
 
 export default {

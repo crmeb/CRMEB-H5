@@ -20,6 +20,15 @@
           {{ text }}
         </button>
       </div>
+      <div class="item acea-row row-between-wrapper" v-if="isShowCode">
+        <input
+          type="text"
+          placeholder="填写验证码"
+          class="codeIput"
+          v-model="codeVal"
+        />
+        <div class="codeVal" @click="again"><img :src="codeUrl" /></div>
+      </div>
     </div>
     <div class="confirmBnt bg-color-red" @click="confirm">确认绑定</div>
   </div>
@@ -27,9 +36,10 @@
 <script>
 import { mapGetters } from "vuex";
 import sendVerifyCode from "@mixins/SendVerifyCode";
-import { required, alpha_num, chs_phone } from "@utils/validate";
+import attrs, { required, alpha_num, chs_phone } from "@utils/validate";
 import { validatorDefaultCatch } from "@utils/dialog";
-import { registerVerify, bindingPhone } from "@api/user";
+import { registerVerify, bindingPhone, getCodeApi } from "@api/user";
+import { VUE_APP_API_URL } from "@utils";
 
 export default {
   name: "BindingPhone",
@@ -38,16 +48,35 @@ export default {
   data: function() {
     return {
       captcha: "",
-      phone: "" //手机号
+      phone: "", //手机号
+      keyCode: "",
+      codeUrl: "",
+      codeVal: "",
+      isShowCode: false
     };
   },
   mixins: [sendVerifyCode],
   computed: mapGetters(["userInfo"]),
-  mounted: function() {},
+  mounted: function() {
+    this.getCode();
+  },
   methods: {
+    again() {
+      this.codeUrl =
+        VUE_APP_API_URL + "/captcha?" + this.keyCode + Date.parse(new Date());
+    },
+    getCode() {
+      getCodeApi()
+        .then(res => {
+          this.keyCode = res.data.key;
+        })
+        .catch(res => {
+          this.$dialog.error(res.msg);
+        });
+    },
     async confirm() {
       let that = this;
-      const { phone, captcha } = that;
+      const { phone, captcha, codeVal } = that;
       try {
         await that
           .$validator({
@@ -58,15 +87,23 @@ export default {
             captcha: [
               required(required.message("验证码")),
               alpha_num(alpha_num.message("验证码"))
-            ]
+            ],
+            codeVal: this.isShowCode
+              ? [
+                  required(required.message("验证码")),
+                  attrs.length(4, attrs.length.message("验证码")),
+                  alpha_num(alpha_num.message("验证码"))
+                ]
+              : []
           })
-          .validate({ phone, captcha });
+          .validate({ phone, captcha, codeVal });
       } catch (e) {
         return validatorDefaultCatch(e);
       }
       bindingPhone({
         phone: this.phone,
-        captcha: this.captcha
+        captcha: this.captcha,
+        code: this.codeVal
       })
         .then(res => {
           if (res.data !== undefined && res.data.is_bind) {
@@ -131,15 +168,29 @@ export default {
         return validatorDefaultCatch(e);
       }
 
-      registerVerify({ phone: phone })
+      registerVerify({ phone: phone, key: that.keyCode, code: that.codeVal })
         .then(res => {
           that.$dialog.success(res.msg);
           that.sendCode();
         })
         .catch(res => {
+          if (res.data.status === 402) {
+            that.codeUrl = `${VUE_APP_API_URL}/sms_captcha?key=${that.keyCode}`;
+            that.isShowCode = true;
+          }
           that.$dialog.error(res.msg);
         });
     }
   }
 };
 </script>
+<style scoped>
+.codeVal {
+  width: 1.5rem;
+  height: 0.5rem;
+}
+.codeVal img {
+  width: 100%;
+  height: 100%;
+}
+</style>

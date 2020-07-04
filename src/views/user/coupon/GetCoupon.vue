@@ -7,11 +7,44 @@
         :key="index"
       >
         <div class="money" :class="item.is_use ? 'moneyGray' : ''">
-          ￥<span class="num">{{ item.coupon_price }}</span>
+          <div>
+            ￥<span class="num">{{ item.coupon_price }}</span>
+          </div>
+          <div class="pic-num">满{{ item.use_min_price }}元可用</div>
         </div>
         <div class="text">
           <div class="condition line1">
-            购物满{{ item.use_min_price }}元可用
+            <span
+              class="line-title"
+              :class="
+                item.is_use === true || item.is_use === 2
+                  ? 'bg-color-huic'
+                  : 'bg-color-check'
+              "
+              v-if="item.type === 0"
+              >通用劵</span
+            >
+            <span
+              class="line-title"
+              :class="
+                item.is_use === true || item.is_use === 2
+                  ? 'bg-color-huic'
+                  : 'bg-color-check'
+              "
+              v-else-if="item.type === 1"
+              >品类券</span
+            >
+            <span
+              class="line-title"
+              :class="
+                item.is_use === true || item.is_use === 2
+                  ? 'bg-color-huic'
+                  : 'bg-color-check'
+              "
+              v-else
+              >商品券</span
+            >
+            <span>{{ item.title }}</span>
           </div>
           <div class="data acea-row row-between-wrapper">
             <div v-if="item.end_time !== 0">
@@ -99,3 +132,10 @@ export default {
   }
 };
 </script>
+<style scoped>
+.bg-color-check {
+  color: #e83323;
+  background: #fff7f7;
+  border: 1px solid #e83323;
+}
+</style>

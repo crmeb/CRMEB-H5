@@ -5,5 +5,7 @@ export default {
   token: state => state.app.token,
   isLogin: state => !!state.app.token,
   backgroundColor: state => state.app.backgroundColor,
-  userInfo: state => state.app.userInfo || {}
+  userInfo: state => state.app.userInfo || {},
+  storeItems: state => state.app.storeItems || {},
+  goName: state => state.app.goName
 };

@@ -1,6 +1,10 @@
 <template>
   <div>
-    <div class="product-window" :class="attr.cartAttr === true ? 'on' : ''">
+    <div
+      class="product-window group-con"
+      :class="attr.cartAttr === true ? 'on' : ''"
+      :style="'padding-bottom:' + (isShowBtn ? '0' : '')"
+    >
       <div class="textpic acea-row row-between-wrapper">
         <div class="pictrue">
           <img :src="attr.productSelect.image" class="image" />
@@ -10,8 +14,18 @@
             {{ attr.productSelect.store_name }}
           </div>
           <div class="money font-color-red">
-            ￥<span class="num">{{ attr.productSelect.price }}</span
-            ><span class="stock">库存: {{ attr.productSelect.stock }}</span>
+            ￥<span class="num">{{ attr.productSelect.price }}</span>
+            <span class="stock" v-if="isShow">
+              库存: {{ attr.productSelect.stock }}
+            </span>
+            <span class="stock" v-else>
+              限量:
+              {{
+                attr.productSelect.quota_show
+                  ? attr.productSelect.quota_show
+                  : 0
+              }}
+            </span>
           </div>
         </div>
         <div class="iconfont icon-guanbi" @click="closeAttr"></div>
@@ -26,9 +40,9 @@
           <div class="listn acea-row row-middle">
             <div
               class="itemn"
-              :class="item.index === indexn ? 'on' : ''"
+              :class="item.index === itemn.attr ? 'on' : ''"
               v-for="(itemn, indexn) in item.attr_value"
-              @click="tapAttr(indexw, indexn)"
+              @click="tapAttr(indexw, itemn.attr)"
               :key="indexn"
             >
               {{ itemn.attr }}
@@ -46,8 +60,15 @@
           >
             -
           </div>
-          <div class="item num">{{ attr.productSelect.cart_num }}</div>
+          <div class="item num">
+            <input
+              type="number"
+              v-model="attr.productSelect.cart_num"
+              class="ipt_num"
+            />
+          </div>
           <div
+            v-if="iSplus"
             class="item plus"
             :class="
               attr.productSelect.cart_num >= attr.productSelect.stock
@@ -58,7 +79,33 @@
           >
             +
           </div>
+          <div
+            v-else
+            class="item plus"
+            :class="
+              attr.productSelect.cart_num >= attr.productSelect.product_stock ||
+              attr.productSelect.cart_num >= attr.productSelect.quota_show ||
+              attr.productSelect.cart_num >= attr.productSelect.num
+                ? 'on'
+                : ''
+            "
+            @click="CartNumAdd"
+          >
+            +
+          </div>
         </div>
+      </div>
+      <div class="wrapper" v-if="isShowBtn">
+        <div
+          class="teamBnt bg-color-red"
+          @click="openAlone"
+          v-if="
+            attr.productSelect.quota > 0 && attr.productSelect.product_stock > 0
+          "
+        >
+          立即参团
+        </div>
+        <div class="teamBnt bg-color-hui" v-else>已售罄</div>
       </div>
     </div>
     <div
@@ -76,13 +123,28 @@ export default {
     attr: {
       type: Object,
       default: () => {}
+    },
+    iSplus: {
+      type: String,
+      default: ""
     }
   },
   data: function() {
     return {};
   },
+  computed: {
+    isShow() {
+      return this.$route.path.indexOf("detail") === 1;
+    },
+    isShowBtn() {
+      return this.$route.path.indexOf("group_rule") != -1;
+    }
+  },
   mounted: function() {},
   methods: {
+    openAlone() {
+      this.$emit("changeFun", { action: "goPay", value: false });
+    },
     closeAttr: function() {
       this.$emit("changeFun", { action: "changeattr", value: false });
     },
@@ -106,9 +168,9 @@ export default {
       let productAttr = this.attr.productAttr;
       let value = [];
       for (let i = 0; i < productAttr.length; i++) {
-        for (let j = 0; j < productAttr[i].attr_values.length; j++) {
-          if (productAttr[i].index === j) {
-            value.push(productAttr[i].attr_values[j]);
+        for (let j = 0; j < productAttr[i].attr_value.length; j++) {
+          if (productAttr[i].index === productAttr[i].attr_value[j].attr) {
+            value.push(productAttr[i].attr_value[j].attr);
           }
         }
       }
@@ -117,3 +179,17 @@ export default {
   }
 };
 </script>
+<style scoped>
+.joinCart {
+  width: 80%;
+  height: 0.76rem;
+  line-height: 0.76rem;
+  text-align: center;
+}
+.ipt_num {
+  width: 100%;
+  display: block;
+  line-height: 0.54rem;
+  text-align: center;
+}
+</style>

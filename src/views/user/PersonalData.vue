@@ -128,7 +128,6 @@ import { postUserEdit, getLogout, switchH5Login, getUser } from "@api/user";
 import { clearAuthStatus } from "@libs/wechat";
 import cookie from "@utils/store/cookie";
 import store from "@/store";
-import dayjs from "dayjs";
 
 export default {
   name: "PersonalData",
@@ -171,8 +170,14 @@ export default {
         switchH5Login()
           .then(({ data }) => {
             that.$dialog.loading.close();
-            const expires_time = dayjs(data.expires_time);
-            store.commit("LOGIN", data.token, expires_time);
+            let expires_time = data.expires_time.substring(0, 19);
+            expires_time = expires_time.replace(/-/g, "/");
+            expires_time = new Date(expires_time).getTime() - 28800000;
+            const datas = {
+              token: data.token,
+              expires_time: expires_time
+            };
+            store.commit("LOGIN", datas);
             that.$emit("changeswitch", false);
             location.reload();
           })

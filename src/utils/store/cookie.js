@@ -31,21 +31,41 @@ function set(key, data, time) {
   if (!key) {
     return;
   }
+  // let expires = "2038/1/19 11:14:7";
   let expires = "Tue, 19 Jan 2038 03:14:07 GMT";
   if (time) {
     let date;
     if (isType(time, "Date")) {
       date = time;
     } else {
-      date = new Date();
-      date.setTime(date.getTime() + time * 60000);
+      date = formatDate(time);
+      console.log("cookie:", date);
     }
-    expires = date.toGMTString();
+    expires = date;
   }
-
+  let expiresds = new Date(expires.replace(/-/g, "/"));
+  console.log("expiresds:", expiresds);
   data = JSON.stringify(data);
   doc.cookie =
-    escape(key) + "=" + escape(data) + "; expires=" + expires + "; path=/";
+    escape(key) + "=" + escape(data) + "; expires=" + expiresds + "; path=/";
+}
+
+function formatDate(date) {
+  var dates = new Date(date);
+  var YY = dates.getFullYear() + "-";
+  var MM =
+    (dates.getMonth() + 1 < 10
+      ? "0" + (dates.getMonth() + 1)
+      : dates.getMonth() + 1) + "-";
+  var DD = dates.getDate() < 10 ? "0" + dates.getDate() : dates.getDate();
+  var hh =
+    (dates.getHours() < 10 ? "0" + dates.getHours() : dates.getHours()) + ":";
+  var mm =
+    (dates.getMinutes() < 10 ? "0" + dates.getMinutes() : dates.getMinutes()) +
+    ":";
+  var ss =
+    dates.getSeconds() < 10 ? "0" + dates.getSeconds() : dates.getSeconds();
+  return YY + MM + DD + " " + hh + mm + ss;
 }
 
 function remove(key) {

@@ -4,6 +4,9 @@
       <div class="pictrue"><img :src="orderInfo.image" /></div>
       <div class="num acea-row row-center-wrapper">
         {{ orderInfo.order_id }}
+        <div class="views" @click="toDetail(orderInfo)">
+          查看<span class="iconfont icon-jiantou views-jian"></span>
+        </div>
       </div>
       <div class="tip">确定要核销此订单吗？</div>
       <div class="sure" @click="confirm">确定核销</div>
@@ -13,6 +16,17 @@
   </div>
 </template>
 <style scoped>
+.views {
+  font-size: 0.16rem;
+  background: #c68937;
+  border-radius: 4px;
+  color: #fff;
+  padding: 0.05rem 0.02rem 0.05rem 0.08rem;
+  margin-left: 0.1rem;
+}
+.views-jian {
+  font-size: 0.1rem;
+}
 .WriteOff {
   width: 5.6rem;
   height: 8rem;
@@ -23,7 +37,7 @@
   left: 50%;
   margin-top: -4rem;
   margin-left: -2.8rem;
-  z-index: 99;
+  z-index: 666;
   padding-top: 0.55rem;
 }
 .WriteOff .pictrue {
@@ -117,6 +131,11 @@ export default {
   },
   mounted: function() {},
   methods: {
+    toDetail: function(item) {
+      this.$router.push({
+        path: "/customer/orderdetail/" + item.order_id + "/looks"
+      });
+    },
     cancel: function() {
       this.$emit("cancel", true);
     },

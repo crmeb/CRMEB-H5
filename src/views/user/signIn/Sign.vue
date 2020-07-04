@@ -72,14 +72,14 @@
           </div>
           <div class="num font-color-red">+{{ item.number }}</div>
         </div>
-        <router-link
-          :to="'/user/sign_record'"
+        <div
+          @click="goMore('/user/sign_record')"
           class="Loads acea-row row-center-wrapper"
           v-if="signList.length > 0"
         >
           点击加载更多
           <div class="iconfont icon-xiangyou acea-row row-center-wrapper"></div>
-        </router-link>
+        </div>
       </div>
     </div>
     <div
@@ -135,6 +135,15 @@ export default {
     this.getSignList();
   },
   methods: {
+    goMore(url) {
+      this.$router.push({
+        path: url
+      });
+      this.signList = [];
+      this.page = 1;
+      this.loaded = false;
+      this.loading = false;
+    },
     // js给数字补0；num：需要补0的数字，length：长度（补到多少位）；
     PrefixInteger: function(num, length) {
       return (Array(length).join("0") + num).slice(-length).split("");

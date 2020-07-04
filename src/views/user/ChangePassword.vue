@@ -26,6 +26,15 @@
           {{ text }}
         </button>
       </div>
+      <div class="item acea-row row-between-wrapper" v-if="isShowCode">
+        <input
+          type="text"
+          placeholder="填写验证码"
+          class="codeIput"
+          v-model="codeVal"
+        />
+        <div class="codeVal" @click="again"><img :src="codeUrl" /></div>
+      </div>
     </div>
     <div class="confirmBnt bg-color-red" @click="confirm">确认修改</div>
   </div>
@@ -35,13 +44,27 @@
   width: 2rem;
   text-align: center;
 }
+.codeVal {
+  width: 1.5rem;
+  height: 0.5rem;
+}
+.codeVal img {
+  width: 100%;
+  height: 100%;
+}
 </style>
 <script>
 // import { mapGetters } from "vuex";
 import sendVerifyCode from "@mixins/SendVerifyCode";
 import attrs, { required, alpha_num, chs_phone } from "@utils/validate";
 import { validatorDefaultCatch } from "@utils/dialog";
-import { registerReset, registerVerify, getUserInfo } from "@api/user";
+import {
+  registerReset,
+  registerVerify,
+  getUserInfo,
+  getCodeApi
+} from "@api/user";
+import { VUE_APP_API_URL } from "@utils";
 
 export default {
   name: "ChangePassword",
@@ -53,15 +76,38 @@ export default {
       password2: "",
       captcha: "",
       phone: "", //隐藏几位数的手机号；
-      yphone: "" //手机号；
+      yphone: "", //手机号；
+      keyCode: "",
+      codeUrl: "",
+      codeVal: "",
+      isShowCode: false
     };
   },
   mixins: [sendVerifyCode],
   // computed: mapGetters(["userInfo"]),
   mounted: function() {
+    this.getCode();
     this.getUserInfo();
   },
   methods: {
+    again() {
+      this.codeUrl =
+        VUE_APP_API_URL +
+        "/sms_captcha?" +
+        "key=" +
+        this.keyCode +
+        Date.parse(new Date());
+      console.log(this.codeUrl);
+    },
+    getCode() {
+      getCodeApi()
+        .then(res => {
+          this.keyCode = res.data.key;
+        })
+        .catch(res => {
+          this.$dialog.error(res.msg);
+        });
+    },
     getUserInfo: function() {
       let that = this;
       getUserInfo().then(res => {
@@ -72,7 +118,7 @@ export default {
     },
     async confirm() {
       let that = this;
-      const { password, password2, captcha } = that;
+      const { password, password2, captcha, codeVal } = that;
       try {
         await that
           .$validator({
@@ -84,9 +130,16 @@ export default {
             captcha: [
               required(required.message("验证码")),
               alpha_num(alpha_num.message("验证码"))
-            ]
+            ],
+            codeVal: this.isShowCode
+              ? [
+                  required(required.message("验证码")),
+                  attrs.length(4, attrs.length.message("验证码")),
+                  alpha_num(alpha_num.message("验证码"))
+                ]
+              : []
           })
-          .validate({ password, captcha });
+          .validate({ password, captcha, codeVal });
       } catch (e) {
         return validatorDefaultCatch(e);
       }
@@ -94,7 +147,8 @@ export default {
       registerReset({
         account: that.yphone,
         captcha: that.captcha,
-        password: that.password
+        password: that.password,
+        code: that.codeVal
       })
         .then(res => {
           that.$dialog.success(res.msg).then(() => {
@@ -107,7 +161,7 @@ export default {
     },
     async code() {
       let that = this;
-      const { yphone } = that;
+      const { yphone, codeVal } = that;
       try {
         await that
           .$validator({
@@ -116,17 +170,21 @@ export default {
               chs_phone(chs_phone.message())
             ]
           })
-          .validate({ yphone });
+          .validate({ yphone, codeVal });
       } catch (e) {
         return validatorDefaultCatch(e);
       }
 
-      registerVerify({ phone: yphone })
+      registerVerify({ phone: yphone, key: that.keyCode, code: that.codeVal })
         .then(res => {
           that.$dialog.success(res.msg);
           that.sendCode();
         })
         .catch(res => {
+          if (res.data.status === 402) {
+            that.codeUrl = `${VUE_APP_API_URL}/sms_captcha?key=${that.keyCode}`;
+            that.isShowCode = true;
+          }
           that.$dialog.error(res.msg);
         });
     }

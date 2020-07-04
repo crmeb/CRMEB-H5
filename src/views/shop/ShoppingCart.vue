@@ -70,7 +70,15 @@
               >
                 -
               </div>
-              <div class="num">{{ item.cart_num }}</div>
+              <div class="num">
+                <input
+                  type="number"
+                  v-model="item.cart_num"
+                  class="ipt_num"
+                  @input.prevent="specifiName(index)"
+                  @blur.prevent="blurName(index)"
+                />
+              </div>
               <div
                 class="plus"
                 v-if="cartList.valid[index].attrInfo"
@@ -213,7 +221,8 @@ export default {
       footerswitch: false,
       count: 0,
       checkedIds: [],
-      loaded: false
+      loaded: false,
+      index_num: 0
     };
   },
   watch: {
@@ -369,6 +378,22 @@ export default {
       that.countMoney();
       that.syncCartNum(list);
     },
+    specifiName(index) {
+      let list = this.cartList.valid[index];
+      this.index_num = index;
+      this.carnum();
+      this.countMoney();
+      this.syncCartNum(list);
+    },
+    blurName(index) {
+      let list = this.cartList.valid[index];
+      if (list.cart_num < 1) {
+        this.$set(list, "cart_num", 1);
+      }
+      this.carnum();
+      this.countMoney();
+      this.syncCartNum(list);
+    },
     //减
     reduce: function(index) {
       let that = this;
@@ -442,7 +467,7 @@ export default {
       var array = that.cartList.valid;
       for (let i = 0; i < array.length; i++) {
         if (array[i].checked === true) {
-          carnum += parseInt(array[i].cart_num);
+          if (array[i].cart_num) carnum += parseInt(array[i].cart_num);
         }
       }
       that.$set(that, "cartCount", carnum);
@@ -462,3 +487,11 @@ export default {
   }
 };
 </script>
+<style scoped>
+.ipt_num {
+  width: 100%;
+  display: block;
+  line-height: 0.44rem;
+  text-align: center;
+}
+</style>

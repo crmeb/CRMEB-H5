@@ -64,7 +64,6 @@ export default {
   },
   watch: {
     "$route.params.pid": function(n) {
-      console.log(n);
       if (n) {
         this.activeCateId(n);
       }
@@ -135,10 +134,6 @@ export default {
           initial = true;
           this.navActive = index;
         }
-        // else if (innerHeight + scrollY + 15 > offsetHeight) {
-        //   this.navActive = titles.length - 1;
-        //   initial = true;
-        // }
         return initial;
       }, false);
     }, 500)

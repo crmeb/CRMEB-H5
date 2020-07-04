@@ -5,7 +5,7 @@
         <div>
           <div class="name">提现记录</div>
           <div class="money">
-            ￥<span class="num">{{ commission }}</span>
+            ￥<span class="num">{{ extractCount }}</span>
           </div>
         </div>
         <div class="iconfont icon-jinbi1"></div>
@@ -46,7 +46,7 @@ export default {
   data: function() {
     return {
       info: [],
-      commission: 0,
+      extractCount: 0,
       where: {
         page: 1,
         limit: 3
@@ -84,7 +84,7 @@ export default {
       let that = this;
       getSpreadInfo().then(
         res => {
-          that.commission = res.data.commissionCount;
+          that.extractCount = res.data.extractCount;
         },
         error => {
           this.$dialog.message(error.msg);

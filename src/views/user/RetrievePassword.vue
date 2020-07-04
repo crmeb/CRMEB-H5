@@ -49,6 +49,20 @@
             />
           </div>
         </div>
+        <div class="item" v-if="isShowCode">
+          <div class="align-left">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-code_"></use>
+            </svg>
+            <input
+              type="text"
+              placeholder="填写验证码"
+              class="codeIput"
+              v-model="codeVal"
+            />
+            <div class="code" @click="again"><img :src="codeUrl" /></div>
+          </div>
+        </div>
       </div>
       <div class="logon" @click="registerReset">确认</div>
       <div class="tip">
@@ -63,9 +77,10 @@
 
 <script>
 import sendVerifyCode from "@mixins/SendVerifyCode";
-import { registerVerify, registerReset } from "@api/user";
+import { registerVerify, registerReset, getCodeApi } from "@api/user";
 import { validatorDefaultCatch } from "@utils/dialog";
 import attrs, { required, alpha_num, chs_phone } from "@utils/validate";
+import { VUE_APP_API_URL } from "@utils";
 
 export default {
   name: "RetrievePassword",
@@ -73,14 +88,35 @@ export default {
     return {
       account: "",
       password: "",
-      captcha: ""
+      captcha: "",
+      keyCode: "",
+      codeUrl: "",
+      codeVal: "",
+      isShowCode: false
     };
   },
   mixins: [sendVerifyCode],
+  mounted: function() {
+    this.getCode();
+  },
   methods: {
+    again() {
+      this.codeUrl =
+        VUE_APP_API_URL + "/captcha?" + this.keyCode + Date.parse(new Date());
+      console.log(this.codeUrl);
+    },
+    getCode() {
+      getCodeApi()
+        .then(res => {
+          this.keyCode = res.data.key;
+        })
+        .catch(res => {
+          this.$dialog.error(res.msg);
+        });
+    },
     async registerReset() {
       var that = this;
-      const { account, captcha, password } = that;
+      const { account, captcha, password, codeVal } = that;
       try {
         await that
           .$validator({
@@ -96,16 +132,24 @@ export default {
               required(required.message("密码")),
               attrs.range([6, 16], attrs.range.message("密码")),
               alpha_num(alpha_num.message("密码"))
-            ]
+            ],
+            codeVal: this.isShowCode
+              ? [
+                  required(required.message("验证码")),
+                  attrs.length(4, attrs.length.message("验证码")),
+                  alpha_num(alpha_num.message("验证码"))
+                ]
+              : []
           })
-          .validate({ account, captcha, password });
+          .validate({ account, captcha, password, codeVal });
       } catch (e) {
         return validatorDefaultCatch(e);
       }
       registerReset({
         account: that.account,
         captcha: that.captcha,
-        password: that.password
+        password: that.password,
+        code: that.codeVal
       })
         .then(res => {
           that.$dialog.success(res.msg).then(() => {
@@ -131,15 +175,29 @@ export default {
       } catch (e) {
         return validatorDefaultCatch(e);
       }
-      registerVerify({ phone: that.account })
+      registerVerify({
+        phone: that.account,
+        key: that.keyCode,
+        code: that.codeVal
+      })
         .then(res => {
           that.$dialog.success(res.msg);
           that.sendCode();
         })
         .catch(res => {
+          if (res.data.status === 402) {
+            that.codeUrl = `${VUE_APP_API_URL}/sms_captcha?key=${that.keyCode}`;
+            that.isShowCode = true;
+          }
           that.$dialog.error(res.msg);
         });
     }
   }
 };
 </script>
+<style scoped>
+.code img {
+  width: 100%;
+  height: 100%;
+}
+</style>

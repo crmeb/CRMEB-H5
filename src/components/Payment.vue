@@ -107,7 +107,7 @@ export default {
   border-radius: 0.16rem 0.16rem 0 0;
   background-color: #fff;
   padding-bottom: 0.6rem;
-  z-index: 99;
+  z-index: 666;
   transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
   -webkit-transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
   -moz-transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);

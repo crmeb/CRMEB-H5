@@ -3,7 +3,7 @@
     <div class="promoterHeader bg-color-red">
       <div class="headerCon acea-row row-between-wrapper">
         <div>
-          <div class="name">佣金明细</div>
+          <div class="name">佣金记录</div>
           <div class="money">
             ￥<span class="num">{{ commission }}</span>
           </div>

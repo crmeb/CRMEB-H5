@@ -344,3 +344,15 @@ export function getBrokerageRank(q) {
 export function setDetection() {
   return request.get("user/level/detection");
 }
+/**
+ * 充值金额选择
+ */
+export function getRechargeApi() {
+  return request.get("recharge/index");
+}
+/**
+ * 验证码key
+ */
+export function getCodeApi() {
+  return request.get("verify_code", {}, { login: false });
+}

@@ -178,6 +178,16 @@
       :evaluate="status.type || 0"
       :cartInfo="orderInfo.cartInfo || []"
     ></OrderGoods>
+    <div
+      class="goodCall"
+      @click="
+        $router.push({
+          path: '/customer/list?orderId=' + orderInfo.order_id
+        })
+      "
+    >
+      <span class="iconfont icon-kefu"></span><span>联系客服</span>
+    </div>
     <div class="wrapper">
       <div class="item acea-row row-between">
         <div>订单编号：</div>
@@ -234,7 +244,7 @@
         </div>
       </div>
 
-      <div class="wrapper" v-else>
+      <div class="wrapper" v-if="orderInfo.delivery_type === 'send'">
         <div class="item acea-row row-between">
           <div>配送方式：</div>
           <div class="conter">
@@ -248,7 +258,10 @@
         <div class="item acea-row row-between">
           <div>配送电话：</div>
           <div class="conter acea-row row-middle row-right">
-            {{ orderInfo.delivery_id || "" }}<span class="copy">拨打</span>
+            {{ orderInfo.delivery_id || ""
+            }}<a :href="'tel:' + orderInfo.delivery_id"
+              ><span class="copy">拨打</span></a
+            >
           </div>
         </div>
       </div>
@@ -310,7 +323,15 @@
       </template>
       <template v-if="status.type === 2">
         <div
+          v-if="orderInfo.paid === 1 && orderInfo.refund_status === 0"
+          class="bnt cancel"
+          @click="$router.push({ path: '/order/refund/' + orderInfo.order_id })"
+        >
+          申请退款
+        </div>
+        <div
           class="bnt default"
+          v-if="orderInfo.delivery_type === 'express'"
           @click="
             $router.push({ path: '/order/logistics/' + orderInfo.order_id })
           "
@@ -321,10 +342,16 @@
           确认收货
         </div>
       </template>
-      <template
-        v-if="status.type === 3 && orderInfo.delivery_type === 'express'"
-      >
+      <template v-if="status.type === 3">
         <div
+          v-if="orderInfo.paid === 1 && orderInfo.refund_status === 0"
+          class="bnt cancel"
+          @click="$router.push({ path: '/order/refund/' + orderInfo.order_id })"
+        >
+          申请退款
+        </div>
+        <div
+          v-if="orderInfo.delivery_type === 'express'"
           class="bnt default"
           @click="
             $router.push({ path: '/order/logistics/' + orderInfo.order_id })
@@ -334,10 +361,18 @@
         </div>
       </template>
       <template v-if="status.type === 4">
+        <div
+          v-if="orderInfo.paid === 1 && orderInfo.refund_status === 0"
+          class="bnt cancel"
+          @click="$router.push({ path: '/order/refund/' + orderInfo.order_id })"
+        >
+          申请退款
+        </div>
         <div class="bnt cancel" @click="delOrder">
           删除订单
         </div>
         <div
+          v-if="orderInfo.delivery_type === 'express'"
           class="bnt default"
           @click="
             $router.push({ path: '/order/logistics/' + orderInfo.order_id })
@@ -348,6 +383,13 @@
       </template>
       <template v-if="status.type === 6">
         <div
+          v-if="orderInfo.paid === 1 && orderInfo.refund_status === 0"
+          class="bnt cancel"
+          @click="$router.push({ path: '/order/refund/' + orderInfo.order_id })"
+        >
+          申请退款
+        </div>
+        <div
           class="bnt bg-color-red"
           @click="
             $router.push({ path: '/activity/group_rule/' + orderInfo.pink_id })
@@ -356,6 +398,17 @@
           查看拼团
         </div>
       </template>
+      <div
+        class="bnt bg-color-red"
+        @click="goOrderConfirm(orderInfo)"
+        v-if="
+          orderInfo.paid === 1 &&
+            orderInfo.refund_status === 0 &&
+            orderInfo.status >= 2
+        "
+      >
+        再次购买
+      </div>
     </div>
     <Payment
       v-model="pay"
@@ -380,9 +433,28 @@
       >
       </iframe>
     </div>
+    <GeneralWindow
+      :generalActive="generalActive"
+      @closeGeneralWindow="closeGeneralWindow"
+      :generalContent="generalContent"
+    ></GeneralWindow>
   </div>
 </template>
 <style scoped>
+.goodCall {
+  color: #e93323;
+  text-align: center;
+  width: 100%;
+  height: 0.86rem;
+  padding: 0 0.3rem;
+  border-bottom: 0.01rem solid #eee;
+  font-size: 0.3rem;
+  line-height: 0.86rem;
+  background: #fff;
+}
+.iconfont {
+  margin-right: 0.15rem;
+}
 .geoPage {
   position: fixed;
   width: 100%;
@@ -497,9 +569,10 @@
   margin-left: 0.1rem;
 }
 </style>
+
 <script>
 import OrderGoods from "@components/OrderGoods";
-import { orderDetail } from "@api/order";
+import { orderDetail, orderAgain } from "@api/order";
 import ClipboardJS from "clipboard";
 import Payment from "@components/Payment";
 import { isWeixin } from "@utils";
@@ -511,14 +584,14 @@ import {
   payOrderHandle
 } from "@libs/order";
 import { wechatEvevt } from "@libs/wechat";
-
+import GeneralWindow from "@components/GeneralWindow";
 const NAME = "OrderDetails";
-
 export default {
   name: NAME,
   components: {
     OrderGoods,
-    Payment
+    Payment,
+    GeneralWindow
   },
   props: {},
   data: function() {
@@ -537,7 +610,12 @@ export default {
       from: isWeixin() ? "weixin" : "weixinh5",
       system_store: {},
       mapKay: "",
-      mapShow: false
+      mapShow: false,
+      generalActive: false,
+      generalContent: {
+        promoterNum: "",
+        title: ""
+      }
     };
   },
   computed: {
@@ -566,6 +644,22 @@ export default {
     });
   },
   methods: {
+    // 再次购买
+    goOrderConfirm(e) {
+      orderAgain(e.order_id)
+        .then(res => {
+          this.$router.push({
+            path: "/order/submit/" + res.data.cateId
+          });
+        })
+        .catch(res => {
+          this.$dialog.error(res.msg);
+        });
+    },
+    closeGeneralWindow(msg) {
+      this.generalActive = msg;
+      this.getDetail();
+    },
     showChang: function() {
       if (isWeixin()) {
         let config = {
@@ -607,9 +701,59 @@ export default {
         });
     },
     takeOrder() {
-      takeOrderHandle(this.orderInfo.order_id).finally(() => {
-        this.getDetail();
-      });
+      this.$dialog.loading.open("正在加载中");
+      takeOrderHandle(this.orderInfo.order_id)
+        .then(res => {
+          if (
+            (res.data.gain_integral != "0.00" &&
+              res.data.gain_coupon != "0.00") ||
+            (res.data.gain_integral > 0 && res.data.gain_coupon > 0)
+          ) {
+            this.$dialog.loading.close();
+            this.generalActive = true;
+            this.generalContent = {
+              promoterNum: `恭喜您获得${res.data.gain_coupon}元优惠券以及${
+                res.data.gain_integral
+              }积分，购买商品时可抵现哦～`,
+              title: "恭喜您获得优惠礼包"
+            };
+            return;
+          } else if (
+            res.data.gain_integral != "0.00" ||
+            res.data.gain_integral > 0
+          ) {
+            this.$dialog.loading.close();
+            this.generalActive = true;
+            this.generalContent = {
+              promoterNum: `恭喜您获得${
+                res.data.gain_integral
+              }积分，购买商品时可抵现哦～`,
+              title: "赠送积分"
+            };
+            return;
+          } else if (
+            res.data.gain_coupon != "0.00" ||
+            res.data.gain_coupon > 0
+          ) {
+            this.$dialog.loading.close();
+            this.generalActive = true;
+            this.generalContent = {
+              promoterNum: `恭喜您获得${
+                res.data.gain_coupon
+              }元优惠券，购买商品时可抵现哦～`,
+              title: "恭喜您获得优惠券"
+            };
+            return;
+          } else {
+            this.$dialog.loading.close();
+            this.$dialog.success("收货成功");
+          }
+          this.getDetail();
+        })
+        .catch(res => {
+          this.$dialog.loading.close();
+          this.$dialog.error(res.msg);
+        });
     },
     delOrder() {
       delOrderHandle(this.orderInfo.order_id).then(() => {
@@ -679,9 +823,17 @@ export default {
           this.system_store = res.data.system_store || {};
           this.mapKey = res.data.mapKey;
           this.setOfflinePayStatus(this.orderInfo.offlinePayStatus);
+          this.$nextTick(function() {
+            let copybtn = document.getElementsByClassName("copy-data");
+            const clipboard = new ClipboardJS(copybtn);
+            clipboard.on("success", () => {
+              this.$dialog.success("复制成功");
+            });
+          });
         })
         .catch(err => {
           this.$dialog.error(err.msg);
+          this.$router.go(-1);
         });
     },
     async toPay(type) {

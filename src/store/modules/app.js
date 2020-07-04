@@ -10,7 +10,9 @@ const state = {
   homeActive: false,
   token: store.get(LOGIN_KEY) || null,
   backgroundColor: "#fff",
-  userInfo: null
+  userInfo: null,
+  storeItems: store.get("storeItems") || null,
+  goName: store.get("goName") || ""
 };
 
 const mutations = {
@@ -32,9 +34,11 @@ const mutations = {
   CLOSE_HOME(state) {
     state.homeActive = false;
   },
-  LOGIN(state, token, expires_time) {
-    state.token = token;
-    store.set(LOGIN_KEY, token, expires_time);
+  LOGIN(state, datas) {
+    state.token = datas.token;
+    state.expires_time = datas.expires_time;
+    store.set(LOGIN_KEY, datas.token, datas.expires_time);
+    store.set("expires", datas.expires_time);
   },
   LOGOUT(state) {
     state.token = undefined;
@@ -46,9 +50,16 @@ const mutations = {
   },
   UPDATE_USERINFO(state, userInfo) {
     state.userInfo = userInfo;
+  },
+  GET_STORE(state, storeItems) {
+    state.storeItems = storeItems;
+    store.set("storeItems", storeItems);
+  },
+  GET_TO(state, goName) {
+    state.goName = goName;
+    store.set("goName", goName);
   }
 };
-
 const actions = {
   USERINFO({ state, commit }, force) {
     if (state.userInfo !== null && !force)

@@ -28,7 +28,7 @@ const router = new Router({
       component: Index
     },
     {
-      path: "/customer/chat/:id",
+      path: "/customer/chat/:id/:productId?",
       name: "CustomerService",
       meta: {
         title: "客服聊天",
@@ -134,6 +134,15 @@ const router = new Router({
         keepAlive: false
       },
       component: () => import("@views/shop/GoodsCon.vue")
+    },
+    {
+      path: "/shop/storeList/:gonames?",
+      name: "StoreList",
+      meta: {
+        title: "门店列表",
+        keepAlive: false
+      },
+      component: () => import("@views/shop/StoreList.vue")
     },
     {
       path: "/cart",

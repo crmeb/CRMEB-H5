@@ -55,8 +55,12 @@ export function getSeckillList(time, data) {
 /**
  * 秒杀产品详情
  */
-export function getSeckillDetail(id) {
-  return request.get("/seckill/detail/" + id, {}, { login: false });
+export function getSeckillDetail(id, time, status) {
+  return request.get(
+    "/seckill/detail/" + id + "/" + time + "/" + status,
+    {},
+    { login: false }
+  );
 }
 
 /**
