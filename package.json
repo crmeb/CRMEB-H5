@@ -43,7 +43,7 @@
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "hard-source-webpack-plugin": "^0.13.1",
-    "lint-staged": "^8.1.5",
+    "lint-staged": "^13.1.0",
     "sass": "^1.18.0",
     "sass-loader": "^7.1.0",
     "vconsole": "^3.3.2",
